@@ -8,9 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-        body {
-            font-family: 'Inter', sans-serif;
-        }
+        body { font-family: 'Inter', sans-serif; }
         @media print {
             body { background-color: white; }
             .no-print { display: none !important; }
@@ -204,36 +202,36 @@
                     <h2 class="text-lg font-semibold text-teal-800 border-b pb-2 mb-4">4. Data Klinis & Biokimia</h2>
                     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                         <div>
-                            <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Hb (g/dL)</label>
-                            <input type="number" id="bio-hb" step="0.1" placeholder="cth: 11.2" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                            <label class="block text-[10px] font-semibold text-slate-600 uppercase mb-1">Hb (g/dL)<br><span class="text-[9px] text-slate-400 font-normal">N: 12-16</span></label>
+                            <input type="number" id="bio-hb" step="0.1" placeholder="g/dL" class="w-full px-2 py-1.5 border border-slate-300 rounded-lg text-xs">
                         </div>
                         <div>
-                            <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Albumin (g/dL)</label>
-                            <input type="number" id="bio-albumin" step="0.1" placeholder="cth: 3.2" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                            <label class="block text-[10px] font-semibold text-slate-600 uppercase mb-1">Albumin (g/dL)<br><span class="text-[9px] text-slate-400 font-normal">N: 3.5-5.0</span></label>
+                            <input type="number" id="bio-albumin" step="0.1" placeholder="g/dL" class="w-full px-2 py-1.5 border border-slate-300 rounded-lg text-xs">
                         </div>
                         <div>
-                            <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">GDS (mg/dL)</label>
-                            <input type="number" id="bio-gds" placeholder="cth: 180" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                            <label class="block text-[10px] font-semibold text-slate-600 uppercase mb-1">GDS (mg/dL)<br><span class="text-[9px] text-slate-400 font-normal">N: < 200</span></label>
+                            <input type="number" id="bio-gds" placeholder="mg/dL" class="w-full px-2 py-1.5 border border-slate-300 rounded-lg text-xs">
                         </div>
                         <div>
-                            <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Leukosit (/µL)</label>
-                            <input type="number" id="bio-leuko" placeholder="cth: 7500" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                            <label class="block text-[10px] font-semibold text-slate-600 uppercase mb-1">Leukosit (/µL)<br><span class="text-[9px] text-slate-400 font-normal">N: 4k-11k</span></label>
+                            <input type="number" id="bio-leuko" placeholder="/µL" class="w-full px-2 py-1.5 border border-slate-300 rounded-lg text-xs">
                         </div>
                         <div>
-                            <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Trombosit (/µL)</label>
-                            <input type="number" id="bio-trombo" placeholder="cth: 250000" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                            <label class="block text-[10px] font-semibold text-slate-600 uppercase mb-1">Trombosit (/µL)<br><span class="text-[9px] text-slate-400 font-normal">N: 150k-450k</span></label>
+                            <input type="number" id="bio-trombo" placeholder="/µL" class="w-full px-2 py-1.5 border border-slate-300 rounded-lg text-xs">
                         </div>
                         <div>
-                            <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Asam Urat (mg/dL)</label>
-                            <input type="number" id="bio-aurat" step="0.1" placeholder="cth: 5.5" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                            <label class="block text-[10px] font-semibold text-slate-600 uppercase mb-1">Asam Urat (mg/dL)<br><span class="text-[9px] text-slate-400 font-normal">N: 2.4-7.0</span></label>
+                            <input type="number" id="bio-aurat" step="0.1" placeholder="mg/dL" class="w-full px-2 py-1.5 border border-slate-300 rounded-lg text-xs">
                         </div>
                         <div>
-                            <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Kolesterol (mg/dL)</label>
-                            <input type="number" id="bio-koles" placeholder="cth: 190" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                            <label class="block text-[10px] font-semibold text-slate-600 uppercase mb-1">Kolesterol (mg/dL)<br><span class="text-[9px] text-slate-400 font-normal">N: < 200</span></label>
+                            <input type="number" id="bio-koles" placeholder="mg/dL" class="w-full px-2 py-1.5 border border-slate-300 rounded-lg text-xs">
                         </div>
                         <div>
-                            <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Kreatinin (mg/dL)</label>
-                            <input type="number" id="bio-kreatin" step="0.1" placeholder="cth: 0.9" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                            <label class="block text-[10px] font-semibold text-slate-600 uppercase mb-1">Kreatinin (mg/dL)<br><span class="text-[9px] text-slate-400 font-normal">N: 0.5-1.2</span></label>
+                            <input type="number" id="bio-kreatin" step="0.1" placeholder="mg/dL" class="w-full px-2 py-1.5 border border-slate-300 rounded-lg text-xs">
                         </div>
                     </div>
 
@@ -298,7 +296,7 @@
                         </div>
                     </div>
 
-                    <!-- Menu Diet (Checklist Toggles) -->
+                    <!-- Menu Diet -->
                     <div class="mb-4 p-4 bg-slate-50 border rounded-lg border-slate-200">
                         <h3 class="text-xs font-bold text-slate-700 uppercase mb-3">Pilihan Preskripsi Terapi Diet</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
@@ -357,7 +355,7 @@
                     </div>
                 </div>
 
-                <!-- 6. Diagnosa Medis, Diagnosa Gizi, Intervensi & Monev Baru -->
+                <!-- 6. Diagnosa Medis, Diagnosa Gizi, Intervensi & Monev -->
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
                     <h2 class="text-lg font-semibold text-teal-800 border-b pb-2 mb-4">6. Diagnosa, Rencana Intervensi & Monitoring</h2>
                     <div class="space-y-4">
@@ -412,7 +410,7 @@
                             <textarea id="nutrition-diagnosis" rows="5" placeholder="Problem (P): ...&#10;Etiology (E): ...&#10;Signs/Symptoms (S): ..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs leading-relaxed"></textarea>
                         </div>
 
-                        <!-- NEW: Kolom Intervensi Gizi & Monev Manual -->
+                        <!-- Intervensi Gizi & Monev Manual -->
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Rencana Intervensi Gizi (Manual)</label>
                             <textarea id="nutrition-intervention" rows="3" placeholder="Tulis target, estimasi bentuk makanan, jalur enteral/parenteral, atau konseling gizi..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs leading-relaxed"></textarea>
@@ -446,7 +444,7 @@
                     
                     <div class="hidden print:block text-center border-b-2 border-teal-800 pb-4 mb-6">
                         <h1 class="text-2xl font-bold uppercase tracking-wider text-teal-800">Dokumen Asuhan Gizi Pasien</h1>
-                        <p class="text-xs text-slate-500 font-medium">Terapi Gizi Klinik Medis Terintegrasi</p>
+                        <p class="text-xs text-slate-500 font-medium font-sans">Terapi Gizi Klinik Medis Terintegrasi</p>
                     </div>
 
                     <h2 class="text-xl font-bold text-teal-800 border-b pb-2 mb-4 flex justify-between items-center">
@@ -532,7 +530,7 @@
                         </div>
                     </div>
 
-                    <!-- NEW Preview: Intervensi & Monev Gizi Manual di Lembar Hasil -->
+                    <!-- Preview: Intervensi & Monev Gizi Manual di Lembar Hasil -->
                     <div class="border-t pt-4 text-xs space-y-3">
                         <div>
                             <h3 class="font-bold text-slate-700 uppercase mb-1">Rencana Intervensi Gizi:</h3>
@@ -554,22 +552,23 @@
         // =========================================================================
         // PENGATURAN TAUTAN GOOGLE SPREADSHEETS (BAKU)
         // =========================================================================
-        const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzLuQa2pP1bzuhUu59JhBu7dD5Fqll3m1lRhxJXprdMBjMdvBYajyUy-ntkiNxEceuc-w/exec";
+        const GOOGLE_SHEETS_WEB_APP_URL = "TEMPEL_URL_WEB_APP_ANDA_DISINI";
         // =========================================================================
 
-        // Referensi Antropometri Anak WHO / Permenkes No. 2 Tahun 2020 (Batas Maksimal 5 Tahun / 60 Bulan)
+        // Referensi Antropometri Anak WHO / Permenkes No. 2 Tahun 2020 (0 - 60 Bulan)
         const childBmiRef = {
-            male: [
-                {age: 2, med: 16.2, sd: 1.1}, {age: 3, med: 15.8, sd: 1.1}, {age: 4, med: 15.5, sd: 1.1}, {age: 5, med: 15.3, sd: 1.2}
-            ],
-            female: [
-                {age: 2, med: 16.0, sd: 1.2}, {age: 3, med: 15.6, sd: 1.1}, {age: 4, med: 15.3, sd: 1.1}, {age: 5, med: 15.1, sd: 1.2}
-            ]
+            male: {
+                0: [13.4, 1.1], 6: [16.3, 1.2], 12: [16.8, 1.2], 24: [16.3, 1.1], 36: [15.8, 1.1], 48: [15.5, 1.1], 60: [15.3, 1.2]
+            },
+            female: {
+                0: [13.3, 1.1], 6: [15.8, 1.1], 12: [16.3, 1.1], 24: [15.8, 1.1], 36: [15.4, 1.1], 48: [15.1, 1.1], 60: [15.0, 1.1]
+            }
         };
 
         let calculatedAgeYears = 0;
         let calculatedAgeMonths = 0;
         let totalMonths = 0;
+        let isPesEdited = false; // Flag pelacak perubahan manual pada kolom PES
         let globalCalculatedData = null;
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -582,9 +581,30 @@
                     applyRoomFormulaRules(e.target.value);
                 });
             });
+
+            // Daftarkan Live Trigger Event untuk Auto-PES live generation
+            const triggerIds = [
+                'dob', 'exam-date', 'gender', 'weight', 'height', 'med-diagnosis',
+                'bio-hb', 'bio-albumin', 'bio-gds', 'bio-leuko', 'bio-trombo', 'bio-aurat', 'bio-koles', 'bio-kreatin',
+                'gi-mual', 'gi-muntah', 'gi-diare', 'gi-menelan',
+                'scr-nafsu-makan', 'scr-asupan', 'scr-kunyah', 'scr-bb-turun'
+            ];
+            
+            triggerIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('change', autoGeneratePESDraft);
+                    el.addEventListener('input', autoGeneratePESDraft);
+                }
+            });
+
+            // Set flag edit ketika pengguna mengetik secara manual di kolom PES
+            document.getElementById('nutrition-diagnosis').addEventListener('input', () => {
+                isPesEdited = true;
+            });
         });
 
-        // Logika Penguncian Rumus Sesuai Ketetapan Baru
+        // Logika Penguncian Rumus Sesuai Ketetapan Baru (Harris-Benedict untuk Interne, HCU, Kebidanan) [2]
         function applyRoomFormulaRules(room) {
             const formulaSelect = document.getElementById('formula');
             
@@ -592,16 +612,16 @@
                 formulaSelect.value = "harris"; // LOCKED to Harris-Benedict [2]
                 formulaSelect.disabled = true;
             } else {
-                // Untuk Bedah, Rawat Jalan, dan Anak dibiarkan terbuka bebas bagi klinisi
                 formulaSelect.disabled = false;
                 if (room === "Rawat Inap Anak") {
-                    if (totalMonths <= 60) {
+                    if (totalMonths <= 60 && totalMonths > 0) {
                         formulaSelect.value = "schofield";
                     } else {
                         formulaSelect.value = "mifflin"; // Di atas 5 tahun menggunakan "rumus biasa"
                     }
                 }
             }
+            autoGeneratePESDraft();
         }
 
         function calculateAge() {
@@ -630,11 +650,10 @@
 
             calculatedAgeYears = years;
             calculatedAgeMonths = months;
-            totalMonths = (years * 12) + months; // Konversi total umur bulan
+            totalMonths = (years * 12) + months; 
 
             document.getElementById('calculated-age').textContent = `${years} Tahun, ${months} Bulan (${totalMonths} Bulan)`;
 
-            // Sesuaikan aturan penguncian/suggest formula berdasarkan total bulan saat ini
             const activeRoom = document.querySelector('input[name="ruang-rawat"]:checked').value;
             applyRoomFormulaRules(activeRoom);
         }
@@ -647,6 +666,7 @@
             } else {
                 customContainer.classList.add('hidden');
             }
+            autoGeneratePESDraft();
         }
 
         function validatePercentages() {
@@ -671,12 +691,35 @@
             }
         }
 
-        // Hitung Z-Score IMT/U (Hanya untuk anak batas usia maksimal 5 tahun / 60 bulan)
-        function getChildNutritionalStatus(ageY, gender, bmi) {
-            const refList = childBmiRef[gender];
-            let closest = refList.reduce((prev, curr) => Math.abs(curr.age - ageY) < Math.abs(prev.age - ageY) ? curr : prev);
+        // Interpolator Z-Score IMT/U WHO 2006 (0 - 60 Bulan)
+        function getWHO2006BmiRef(months, gender) {
+            const refs = childBmiRef[gender];
+            const keys = Object.keys(refs).map(Number).sort((a,b) => a-b);
             
-            const zScore = (bmi - closest.med) / closest.sd;
+            let lower = keys[0];
+            let upper = keys[keys.length - 1];
+            
+            if (months <= lower) return refs[lower];
+            if (months >= upper) return refs[upper];
+            
+            for (let i = 0; i < keys.length - 1; i++) {
+                if (months >= keys[i] && months <= keys[i+1]) {
+                    lower = keys[i];
+                    upper = keys[i+1];
+                    break;
+                }
+            }
+            
+            const t = (months - lower) / (upper - lower);
+            const med = refs[lower][0] + t * (refs[upper][0] - refs[lower][0]);
+            const sd = refs[lower][1] + t * (refs[upper][1] - refs[lower][1]);
+            
+            return [med, sd];
+        }
+
+        function getChildNutritionalStatus(months, gender, bmi) {
+            const [med, sd] = getWHO2006BmiRef(months, gender);
+            const zScore = (bmi - med) / sd;
             
             if (zScore < -3) return { status: "Sangat Kurus (Severely Wasted)", z: zScore };
             if (zScore >= -3 && zScore < -2) return { status: "Kurus (Wasted)", z: zScore };
@@ -684,6 +727,147 @@
             if (zScore > 1 && zScore <= 2) return { status: "Berisiko Gizi Lebih", z: zScore };
             if (zScore > 2 && zScore <= 3) return { status: "Gizi Lebih (Overweight)", z: zScore };
             return { status: "Obesitas (Obese)", z: zScore };
+        }
+
+        // FUNGSI UTAMA AUTO-GENERATE PES SECARA LIVE (REAL-TIME)
+        function autoGeneratePESDraft() {
+            if (isPesEdited) return; // Kunci draf jika pengguna sudah mengedit manual
+
+            const gender = document.getElementById('gender').value;
+            const height = parseFloat(document.getElementById('height').value);
+            const weight = parseFloat(document.getElementById('weight').value);
+
+            // Data Lab & Penunjang
+            const hb = parseFloat(document.getElementById('bio-hb').value);
+            const albumin = parseFloat(document.getElementById('bio-albumin').value);
+            const gds = parseFloat(document.getElementById('bio-gds').value);
+            const leuko = parseFloat(document.getElementById('bio-leuko').value);
+            const aurat = parseFloat(document.getElementById('bio-aurat').value);
+            const koles = parseFloat(document.getElementById('bio-koles').value);
+            const kreatin = parseFloat(document.getElementById('bio-kreatin').value);
+
+            // Gejala GI
+            const mual = document.getElementById('gi-mual').checked;
+            const muntah = document.getElementById('gi-muntah').checked;
+            const diare = document.getElementById('gi-diare').checked;
+            const sulitMenelan = document.getElementById('gi-menelan').checked;
+
+            // Skrining Riwayat Gizi
+            const scrNafsu = document.getElementById('scr-nafsu-makan').checked;
+            const scrAsupan = document.getElementById('scr-asupan').checked;
+            const scrKunyah = document.getElementById('scr-kunyah').checked;
+            const scrBb = document.getElementById('scr-bb-turun').checked;
+
+            // Diagnosa Medis Terstruktur
+            const selectedMedDiag = document.getElementById('med-diagnosis').value;
+            let medDiagnosis = selectedMedDiag;
+            if (selectedMedDiag === 'Lainnya') {
+                medDiagnosis = document.getElementById('med-diagnosis-custom').value.trim() || 'Tulis Diagnosa Manual';
+            }
+
+            let bmi = 0;
+            if (weight > 0 && height > 0) {
+                const heightM = height / 100;
+                bmi = weight / (heightM * heightM);
+            }
+
+            let statusGiziKategori = "";
+            if (totalMonths <= 60 && totalMonths > 0 && bmi > 0) {
+                const childResult = getChildNutritionalStatus(totalMonths, gender, bmi);
+                statusGiziKategori = childResult.status;
+            } else if (bmi > 0) {
+                if (bmi < 18.5) statusGiziKategori = 'Sangat Kurus (Underweight)';
+                else if (bmi >= 18.5 && bmi < 25.0) statusGiziKategori = 'Normal';
+                else if (bmi >= 25.0 && bmi < 27.0) statusGiziKategori = 'Kelebihan Berat Badan (Overweight)';
+                else statusGiziKategori = 'Obesitas (Obese)';
+            }
+
+            let pesList = [];
+
+            // 1. Prioritas Diagnosa Medis ke PES
+            if (medDiagnosis.includes("Diabetes Mellitus")) {
+                let gdsStr = !isNaN(gds) ? ` ditandai dengan hiperglikemia (GDS ${gds} mg/dL)` : "";
+                pesList.push("[NI.5.4] Asupan karbohidrat tidak konsisten berkaitan dengan gangguan metabolisme glukosa sekunder akibat Diabetes Mellitus" + gdsStr + ".");
+            } else if (medDiagnosis.includes("Gagal Ginjal") || medDiagnosis.includes("CKD")) {
+                let kreatinStr = !isNaN(kreatin) ? ` ditandai dengan peningkatan kreatinin serum ${kreatin} mg/dL` : "";
+                pesList.push("[NI.5.1] Kebutuhan zat gizi spesifik (Protein/Cairan) berubah berkaitan dengan penurunan fungsi ekskresi ginjal sekunder akibat CKD" + kreatinStr + ".");
+            } else if (medDiagnosis.includes("Sirosis Hepatis")) {
+                let albStr = !isNaN(albumin) ? ` ditandai dengan hipoalbuminemia ${albumin} g/dL` : "";
+                pesList.push("[NC.2.2] Perubahan nilai laboratorium gizi berkaitan dengan penurunan fungsi metabolisme organ hati" + albStr + ".");
+            } else if (medDiagnosis.includes("Hyperemesis Gravidarum")) {
+                pesList.push("[NI.2.1] Asupan oral tidak adekuat berkaitan dengan mual muntah berlebih sekunder akibat kehamilan ditandai dengan diagnosa medis Hyperemesis Gravidarum.");
+            } else if (medDiagnosis.includes("Diare Akut")) {
+                pesList.push("[NC.1.4] Gangguan fungsi gastrointestinal berkaitan dengan diare akut ditandai dengan peningkatan frekuensi defekasi cair.");
+            } else if (medDiagnosis.includes("Stroke Non-Hemoragik")) {
+                pesList.push("[ND.1.2] Kesulitan menelan (Disfagia) berkaitan dengan penurunan fungsi neurologis motorik sekunder akibat stroke ditandai dengan refleks menelan yang lemah.");
+            } else if (medDiagnosis.includes("Malnutrisi") || medDiagnosis.includes("MEP")) {
+                pesList.push("[NI.1.1] Asupan energi tidak adekuat berkaitan dengan asupan makanan bergizi tidak seimbang ditandai dengan status gizi buruk/kurang.");
+            } else if (medDiagnosis.includes("Sepsis") || medDiagnosis.includes("Gagal Napas")) {
+                let leukoStr = !isNaN(leuko) ? ` ditandai dengan leukositosis ${leuko} /µL` : "";
+                pesList.push("[NI.1.1] Peningkatan kebutuhan energi berkaitan dengan hipermetabolisme akut akibat sepsis/infeksi berat" + leukoStr + ".");
+            } else if (medDiagnosis.includes("Apendisitis") || medDiagnosis.includes("Post-SC") || medDiagnosis.includes("Post-Op")) {
+                pesList.push("[NI.2.1] Asupan oral tidak adekuat berkaitan dengan masa pemulihan pasca tindakan bedah/Sectio Caesarea ditandai dengan status puasa/diet transisi.");
+            } else if (medDiagnosis.includes("Pre-eklampsia")) {
+                pesList.push("[NI.5.1] Kebutuhan natrium dan cairan berubah berkaitan dengan edema sekunder akibat pre-eklampsia ditandai dengan retensi cairan tubuh.");
+            }
+
+            // 2. Evaluasi Berdasarkan Skrining Riwayat Gizi
+            if (scrBb) {
+                pesList.push("[NC.3.2] Penurunan berat badan yang tidak direncanakan berkaitan dengan penurunan asupan makanan ditandai dengan penurunan berat badan > 3 kg.");
+            }
+            if (scrAsupan || scrNafsu) {
+                if (!pesList.some(item => item.includes("NI.2.1"))) {
+                    let pemicu = scrNafsu ? "penurunan nafsu makan (anoreksia)" : "gangguan patofisiologi penyakit";
+                    pesList.push("[NI.2.1] Asupan oral tidak adekuat berkaitan dengan " + pemicu + " ditandai dengan porsi asupan makan berkurang < 50% porsi standar.");
+                }
+            }
+            if (scrKunyah) {
+                if (!pesList.some(item => item.includes("NC.1.1")) && !pesList.some(item => item.includes("ND.1.2"))) {
+                    pesList.push("[NC.1.1] Kesulitan mengunyah/menelan berkaitan dengan gangguan mekanik oral ditandai dengan laporan kesulitan makan.");
+                }
+            }
+
+            // 3. Evaluasi Antropometri
+            if (statusGiziKategori && (statusGiziKategori.includes("Sangat Kurus") || statusGiziKategori.includes("Kurus"))) {
+                if (!pesList.some(item => item.includes("NC.3.1"))) {
+                    pesList.push(`[NC.3.1] Berat Badan Kurang berkaitan dengan asupan makanan tidak adekuat jangka panjang ditandai dengan status gizi: ${statusGiziKategori}.`);
+                }
+            } else if (statusGiziKategori && (statusGiziKategori.includes("Obesitas") || statusGiziKategori.includes("Gizi Lebih"))) {
+                if (!pesList.some(item => item.includes("NC.3.3"))) {
+                    pesList.push(`[NC.3.3] Obesitas/Gizi Lebih berkaitan dengan ketidakseimbangan asupan zat gizi energi tinggi ditandai dengan status gizi: ${statusGiziKategori}.`);
+                }
+            }
+
+            // 4. Gejala Gastrointestinal
+            let gejalas = [];
+            if (mual) gejalas.push('mual');
+            if (muntah) gejalas.push('muntah');
+            if (diare) gejalas.push('diare');
+            if (sulitMenelan) gejalas.push('kesulitan menelan');
+            
+            if (gejalas.length > 0 && !pesList.some(item => item.includes("NC.1.4"))) {
+                pesList.push("[NC.1.4] Gangguan Fungsi Gastrointestinal berkaitan dengan kondisi patofisiologis saluran cerna ditandai dengan keluhan " + gejalas.join(", ") + ".");
+            }
+
+            // 5. Penanda Laboratorium Tambahan (Lab Baru)
+            if (!isNaN(hb) && hb < 12.0 && !pesList.some(item => item.includes("Anemia"))) {
+                pesList.push("[NC.2.2] Perubahan Nilai Laboratorium Terkait Gizi (Indikasi Anemia) ditandai dengan kadar Hb rendah " + hb + " g/dL.");
+            }
+            if (!isNaN(albumin) && albumin < 3.5 && !pesList.some(item => item.includes("Hipoalbuminemia")) && !pesList.some(item => item.includes("Sirosis Hepatis"))) {
+                pesList.push("[NC.2.2] Perubahan Nilai Laboratorium Terkait Gizi (Hipoalbuminemia) ditandai dengan kadar Albumin " + albumin + " g/dL.");
+            }
+            if (!isNaN(aurat) && aurat > 7.0) {
+                pesList.push("[NC.2.2] Perubahan Nilai Laboratorium Gizi (Hiperurisemia) ditandai dengan kadar asam urat tinggi " + aurat + " mg/dL.");
+            }
+            if (!isNaN(koles) && koles > 200) {
+                pesList.push("[NC.2.2] Perubahan Nilai Laboratorium Gizi (Hiperkolesterolemia) ditandai dengan kadar kolesterol total " + koles + " mg/dL.");
+            }
+
+            if (pesList.length === 0) {
+                pesList.push("[NI.2.1] Asupan Oral Tidak Adekuat berkaitan dengan penurunan asupan makan ditandai dengan riwayat diet.");
+            }
+
+            document.getElementById('nutrition-diagnosis').value = pesList.join("\n\n");
         }
 
         function calculateNutrition() {
@@ -709,7 +893,7 @@
             const jenisPasien = document.querySelector('input[name="jenis-pasien"]:checked').value;
             const examDate = document.getElementById('exam-date').value || '-';
 
-            // Data Lab & Penunjang Klinis
+            // Data Lab & Penunjang
             const hb = parseFloat(document.getElementById('bio-hb').value);
             const albumin = parseFloat(document.getElementById('bio-albumin').value);
             const gds = parseFloat(document.getElementById('bio-gds').value);
@@ -772,15 +956,13 @@
             let statusGiziDisplay = "";
             let statusGiziKategori = "";
             
-            if (totalMonths <= 60) {
-                // Di bawah atau sama dengan 60 bulan menggunakan penentuan anak (Permenkes No. 2/2020)
+            if (totalMonths <= 60 && totalMonths > 0) {
                 let evalAge = calculatedAgeYears;
-                if (evalAge < 2) evalAge = 2; // Batas minimal referensi tabel adalah 2 tahun
+                if (evalAge < 2) evalAge = 2; // Batas minimal tabel interpolasi
                 const childResult = getChildNutritionalStatus(evalAge, gender, bmi);
                 statusGiziKategori = childResult.status;
-                statusGiziDisplay = `${childResult.status} (Anak ≤ 5 Thn - Permenkes No. 2/2020)`;
+                statusGiziDisplay = `${childResult.status} (Anak ≤ 5 Thn - Permenkes No. 2/2020, Z-Score Est: ${childResult.z.toFixed(2)} SD)`;
             } else {
-                // Di atas 5 tahun otomatis dievaluasi dengan status gizi dewasa umum ("rumus biasa")
                 if (bmi < 18.5) statusGiziKategori = 'Sangat Kurus (Underweight)';
                 else if (bmi >= 18.5 && bmi < 25.0) statusGiziKategori = 'Normal';
                 else if (bmi >= 25.0 && bmi < 27.0) statusGiziKategori = 'Kelebihan Berat Badan (Overweight)';
@@ -872,98 +1054,9 @@
             document.getElementById('out-intervensi').textContent = userIntervention || '-';
             document.getElementById('out-monev').textContent = userMonev || '-';
 
-            // SISTEM GENERATOR DIAGNOSIS GIZI (PES) OTOMATIS BERDASARKAN PARAMETER TERKAIT
-            let pesList = [];
-
-            // 1. Prioritas Utama: Diagnosa Medis
-            if (medDiagnosis.includes("Diabetes Mellitus")) {
-                let gdsStr = !isNaN(gds) ? ` ditandai dengan hiperglikemia (GDS ${gds} mg/dL)` : "";
-                pesList.push("[NI.5.4] Asupan karbohidrat tidak konsisten berkaitan dengan gangguan metabolisme glukosa sekunder akibat Diabetes Mellitus" + gdsStr + ".");
-            } else if (medDiagnosis.includes("Gagal Ginjal") || medDiagnosis.includes("CKD")) {
-                let kreatinStr = !isNaN(kreatin) ? ` ditandai dengan peningkatan kreatinin serum ${kreatin} mg/dL` : "";
-                pesList.push("[NI.5.1] Kebutuhan zat gizi spesifik (Protein/Cairan) berubah berkaitan dengan penurunan fungsi ekskresi ginjal sekunder akibat CKD" + kreatinStr + ".");
-            } else if (medDiagnosis.includes("Sirosis Hepatis")) {
-                let albStr = !isNaN(albumin) ? ` ditandai dengan hipoalbuminemia ${albumin} g/dL` : "";
-                pesList.push("[NC.2.2] Perubahan nilai laboratorium gizi berkaitan dengan penurunan fungsi metabolisme organ hati" + albStr + ".");
-            } else if (medDiagnosis.includes("Hyperemesis Gravidarum")) {
-                pesList.push("[NI.2.1] Asupan oral tidak adekuat berkaitan dengan mual muntah berlebih sekunder akibat kehamilan ditandai dengan diagnosa medis Hyperemesis Gravidarum.");
-            } else if (medDiagnosis.includes("Diare Akut")) {
-                pesList.push("[NC.1.4] Gangguan fungsi gastrointestinal berkaitan dengan diare akut ditandai dengan peningkatan frekuensi defekasi cair.");
-            } else if (medDiagnosis.includes("Stroke Non-Hemoragik")) {
-                pesList.push("[ND.1.2] Kesulitan menelan (Disfagia) berkaitan dengan penurunan fungsi neurologis motorik sekunder akibat stroke ditandai dengan refleks menelan yang lemah.");
-            } else if (medDiagnosis.includes("Malnutrisi") || medDiagnosis.includes("MEP")) {
-                pesList.push("[NI.1.1] Asupan energi tidak adekuat berkaitan dengan asupan makanan bergizi tidak seimbang ditandai dengan status gizi kurang/buruk.");
-            } else if (medDiagnosis.includes("Sepsis") || medDiagnosis.includes("Gagal Napas")) {
-                let leukoStr = !isNaN(leuko) ? ` ditandai dengan leukositosis ${leuko} /µL` : "";
-                pesList.push("[NI.1.1] Peningkatan kebutuhan energi berkaitan dengan hipermetabolisme akut akibat sepsis/infeksi berat" + leukoStr + ".");
-            } else if (medDiagnosis.includes("Apendisitis") || medDiagnosis.includes("Post-SC") || medDiagnosis.includes("Post-Op")) {
-                pesList.push("[NI.2.1] Asupan oral tidak adekuat berkaitan dengan masa pemulihan pasca tindakan bedah/Sectio Caesarea ditandai dengan status puasa/diet transisi.");
-            } else if (medDiagnosis.includes("Pre-eklampsia")) {
-                pesList.push("[NI.5.1] Kebutuhan natrium dan cairan berubah berkaitan dengan edema sekunder akibat pre-eklampsia ditandai dengan retensi cairan tubuh.");
-            }
-
-            // 2. Evaluasi Skrining Riwayat Gizi
-            if (scrBb) {
-                pesList.push("[NC.3.2] Penurunan berat badan yang tidak direncanakan berkaitan dengan penurunan asupan makanan ditandai dengan penurunan berat badan > 3 kg.");
-            }
-            if (scrAsupan || scrNafsu) {
-                if (!pesList.some(item => item.includes("NI.2.1"))) {
-                    let pemicu = scrNafsu ? "penurunan nafsu makan (anoreksia)" : "gangguan patofisiologi penyakit";
-                    pesList.push("[NI.2.1] Asupan oral tidak adekuat berkaitan dengan " + pemicu + " ditandai dengan porsi asupan makan berkurang < 50% porsi standar.");
-                }
-            }
-            if (scrKunyah) {
-                if (!pesList.some(item => item.includes("NC.1.1")) && !pesList.some(item => item.includes("ND.1.2"))) {
-                    pesList.push("[NC.1.1] Kesulitan mengunyah/menelan berkaitan dengan gangguan mekanik oral ditandai dengan laporan kesulitan makan.");
-                }
-            }
-
-            // 3. Evaluasi Antropometri
-            if (statusGiziKategori.includes("Sangat Kurus") || statusGiziKategori.includes("Kurus")) {
-                if (!pesList.some(item => item.includes("NC.3.1"))) {
-                    pesList.push(`[NC.3.1] Berat Badan Kurang berkaitan dengan asupan makanan tidak adekuat jangka panjang ditandai dengan status gizi: ${statusGiziKategori}.`);
-                }
-            } else if (statusGiziKategori.includes("Obesitas") || statusGiziKategori.includes("Gizi Lebih")) {
-                if (!pesList.some(item => item.includes("NC.3.3"))) {
-                    pesList.push(`[NC.3.3] Obesitas/Gizi Lebih berkaitan dengan ketidakseimbangan asupan zat gizi energi tinggi ditandai dengan status gizi: ${statusGiziKategori}.`);
-                }
-            }
-
-            // 4. Gejala Gastrointestinal
-            let gejalas = [];
-            if (mual) gejalas.push('mual');
-            if (muntah) gejalas.push('muntah');
-            if (diare) gejalas.push('diare');
-            if (sulitMenelan) gejalas.push('kesulitan menelan');
-            
-            if (gejalas.length > 0 && !pesList.some(item => item.includes("NC.1.4"))) {
-                pesList.push("[NC.1.4] Gangguan Fungsi Gastrointestinal berkaitan dengan kondisi patofisiologis saluran cerna ditandai dengan keluhan " + gejalas.join(", ") + ".");
-            }
-
-            // 5. Penanda Laboratorium Tambahan (Asam Urat, Kolesterol)
-            if (!isNaN(hb) && hb < 12.0 && !pesList.some(item => item.includes("Anemia"))) {
-                pesList.push("[NC.2.2] Perubahan Nilai Laboratorium Terkait Gizi (Indikasi Anemia) ditandai dengan kadar Hb rendah " + hb + " g/dL.");
-            }
-            if (!isNaN(albumin) && albumin < 3.5 && !pesList.some(item => item.includes("Hipoalbuminemia")) && !pesList.some(item => item.includes("Sirosis Hepatis"))) {
-                pesList.push("[NC.2.2] Perubahan Nilai Laboratorium Terkait Gizi (Hipoalbuminemia) ditandai dengan kadar Albumin " + albumin + " g/dL.");
-            }
-            if (!isNaN(aurat) && aurat > 7.0) {
-                pesList.push("[NC.2.2] Perubahan Nilai Laboratorium Gizi (Hiperurisemia) ditandai dengan kadar asam urat tinggi " + aurat + " mg/dL.");
-            }
-            if (!isNaN(koles) && koles > 200) {
-                pesList.push("[NC.2.2] Perubahan Nilai Laboratorium Gizi (Hiperkolesterolemia) ditandai dengan kadar kolesterol total " + koles + " mg/dL.");
-            }
-
-            // Fallback jika tidak terdeteksi indikasi apa pun
-            if (pesList.length === 0) {
-                pesList.push("[NI.2.1] Asupan Oral Tidak Adekuat berkaitan dengan penurunan asupan makan ditandai dengan riwayat diet.");
-            }
-
-            const autoGeneratedPes = pesList.join("\n\n");
-            
-            // Masukkan draf PES ke textarea di kiri agar masih dapat diedit manual
-            document.getElementById('nutrition-diagnosis').value = autoGeneratedPes;
-            document.getElementById('out-pes').textContent = autoGeneratedPes;
+            // Ambil modifikasi manual terakhir dari kolom PES di sebelah kiri
+            const finalPESValue = document.getElementById('nutrition-diagnosis').value;
+            document.getElementById('out-pes').textContent = finalPESValue;
 
             // Paket data untuk dikirim & diunduh
             globalCalculatedData = {
@@ -986,13 +1079,13 @@
                 lemak: `${fatG.toFixed(1)}g (${Math.round(fatKcal)} kcal)`,
                 karbohidrat: `${carbG.toFixed(1)}g (${Math.round(carbKcal)} kcal)`,
                 riwayatDiet: dietHistory,
-                diagnosisGizi: autoGeneratedPes,
+                diagnosisGizi: finalPESValue,
                 biokimia: `Hb: ${hb || '-'}, Alb: ${albumin || '-'}, GDS: ${gds || '-'}, Leuko: ${leuko || '-'}, Trombo: ${trombo || '-'}, AUrat: ${aurat || '-'}, Koles: ${koles || '-'}, Kreatin: ${kreatin || '-'}`,
                 klinis: `TD: ${bp}, Temp: ${temp || '-'}°C, Gejala: ${gejalas.join(', ') || 'Nihil'}`,
                 skriningGizi: screeningResultText,
                 rencanaDiet: selectedDietsText,
-                intervensi: userIntervention || '-', // Data intervensi manual baru
-                monev: userMonev || '-' // Data monev manual baru
+                intervensi: userIntervention || '-', 
+                monev: userMonev || '-' 
             };
 
             const btnSave = document.getElementById('btn-save-sheets');
@@ -1002,10 +1095,6 @@
             const syncStatus = document.getElementById('sync-status');
             syncStatus.textContent = 'Belum Disimpan';
             syncStatus.className = 'text-[10px] bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full font-bold uppercase no-print';
-
-            if (window.innerWidth < 1024) {
-                document.getElementById('results-card').scrollIntoView({ behavior: 'smooth' });
-            }
         }
 
         // FUNGSI GABUNGAN: Kirim Spreadsheet, Unduh Laporan (.txt), dan Buka Cetak (PDF)
@@ -1121,6 +1210,7 @@ ${data.monev}
         }
 
         function resetForm() {
+            isPesEdited = false; // Reset status pelacak edit manual PES
             document.getElementById('name').value = '';
             document.getElementById('no-rm').value = '';
             document.getElementById('address').value = '';
