@@ -191,7 +191,7 @@
                                 <option value="1.15">Stres Ringan (1.15)</option>
                                 <option value="1.3">Stres Sedang (1.3)</option>
                                 <option value="1.5">Sepsis / Stres Berat (1.5)</option>
-                                <option value="1.7">Luka Bakar Berat (1.7)</option>
+                                <option value="1.7">Luka Burn Berat (1.7)</option>
                             </select>
                         </div>
                     </div>
@@ -612,27 +612,6 @@
                     applyRoomFormulaRules(e.target.value);
                 });
             });
-
-            // Daftarkan Live Trigger Event untuk Auto-PES live generation
-            const triggerIds = [
-                'dob', 'exam-date', 'gender', 'weight', 'height', 'med-diagnosis',
-                'bio-hb', 'bio-albumin', 'bio-gds', 'bio-leuko', 'bio-trombo', 'bio-eritrosit', 'bio-aurat', 'bio-koles', 'bio-kreatin',
-                'gi-mual', 'gi-muntah', 'gi-diare', 'gi-menelan',
-                'scr-nafsu-makan', 'scr-asupan', 'scr-kunyah', 'scr-bb-turun'
-            ];
-            
-            triggerIds.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.addEventListener('change', autoGeneratePESDraft);
-                    el.addEventListener('input', autoGeneratePESDraft);
-                }
-            });
-
-            // Set flag edit ketika pengguna mengetik secara manual di kolom PES
-            document.getElementById('nutrition-diagnosis').addEventListener('input', () => {
-                isPesEdited = true;
-            });
         });
 
         // Logika Penguncian Rumus Sesuai Ketetapan Baru (Harris-Benedict untuk Interne, HCU, Kebidanan) [2]
@@ -782,7 +761,7 @@
                 bmi = weight / (heightM * heightM);
             }
 
-            // Aturan penentuan diagnosis anak vs dewasa sesuai kriteria klinis terbaru (Batas 18 Tahun untuk Ruang Anak)
+            // Aturan penentuan diagnosis anak vs dewasa sesuai kriteria klinis terbaru
             let statusGiziKategori = "";
             const isChildUnder5 = (totalMonths <= 60 && totalMonths > 0);
             const isPediatricUnder18 = (ruangRawat === "Rawat Inap Anak" && calculatedAgeYears < 18);
@@ -866,7 +845,7 @@
                 pesList.push("[NC.1.4] Gangguan Fungsi Gastrointestinal berkaitan dengan kondisi patofisiologis saluran cerna ditandai dengan keluhan " + gejalas.join(", ") + ".");
             }
 
-            // 5. Penanda Laboratorium Tambahan (Lab dengan Batas Baru)
+            // 5. Penanda Laboratorium Tambahan (Lab Baru)
             if (!isNaN(hb) && hb < 12.0 && !pesList.some(item => item.includes("Anemia"))) {
                 pesList.push("[NC.2.2] Perubahan Nilai Laboratorium Terkait Gizi (Indikasi Anemia) ditandai dengan kadar Hb rendah " + hb + " g/dL.");
             }
@@ -900,245 +879,260 @@
         }
 
         function calculateNutrition() {
-            if (!validatePercentages()) {
-                alert('Silakan sesuaikan pembagian persen gizi makro agar total tepat 100%!');
-                return;
-            }
+            try {
+                if (!validatePercentages()) {
+                    alert('Silakan sesuaikan pembagian persen gizi makro agar total tepat 100%!');
+                    return;
+                }
 
-            const name = document.getElementById('name').value.trim() || 'Tidak Disebutkan';
-            const noRm = document.getElementById('no-rm').value.trim() || '-';
-            const address = document.getElementById('address').value.trim() || '-';
-            const dob = document.getElementById('dob').value || '-';
-            const gender = document.getElementById('gender').value;
-            const height = parseFloat(document.getElementById('height').value);
-            const weight = parseFloat(document.getElementById('weight').value);
-            const formula = document.getElementById('formula').value;
-            const activity = parseFloat(document.getElementById('activity').value);
-            const stress = parseFloat(document.getElementById('stress').value);
+                const name = document.getElementById('name').value.trim() || 'Tidak Disebutkan';
+                const noRm = document.getElementById('no-rm').value.trim() || '-';
+                const address = document.getElementById('address').value.trim() || '-';
+                const dob = document.getElementById('dob').value;
+                const gender = document.getElementById('gender').value;
+                const height = parseFloat(document.getElementById('height').value);
+                const weight = parseFloat(document.getElementById('weight').value);
+                const formula = document.getElementById('formula').value;
+                const activity = parseFloat(document.getElementById('activity').value);
+                const stress = parseFloat(document.getElementById('stress').value);
 
-            // Ruang Rawat, Kelas Rawat, & Jenis Pasien
-            const ruangRawat = document.querySelector('input[name="ruang-rawat"]:checked').value;
-            const kelasRawat = document.querySelector('input[name="kelas-rawat"]:checked').value;
-            const jenisPasien = document.querySelector('input[name="jenis-pasien"]:checked').value;
-            const examDate = document.getElementById('exam-date').value || '-';
+                // Validasi Input Utama Pencegah Crash
+                if (!dob) {
+                    alert('Mohon isi Tanggal Lahir terlebih dahulu agar umur terhitung secara otomatis.');
+                    return;
+                }
+                if (isNaN(height) || height <= 0) {
+                    alert('Mohon isi Tinggi Badan dengan angka yang valid.');
+                    return;
+                }
+                if (isNaN(weight) || weight <= 0) {
+                    alert('Mohon isi Berat Badan dengan angka yang valid.');
+                    return;
+                }
 
-            // Data Lab & Penunjang
-            const hb = parseFloat(document.getElementById('bio-hb').value);
-            const albumin = parseFloat(document.getElementById('bio-albumin').value);
-            const gds = parseFloat(document.getElementById('bio-gds').value);
-            const leuko = parseFloat(document.getElementById('bio-leuko').value);
-            const trombo = parseFloat(document.getElementById('bio-trombo').value);
-            const eritro = parseFloat(document.getElementById('bio-eritrosit').value);
-            const aurat = parseFloat(document.getElementById('bio-aurat').value);
-            const koles = parseFloat(document.getElementById('bio-koles').value);
-            const kreatin = parseFloat(document.getElementById('bio-kreatin').value);
+                // Ruang Rawat, Kelas Rawat, & Jenis Pasien
+                const ruangRawat = document.querySelector('input[name="ruang-rawat"]:checked').value;
+                const kelasRawat = document.querySelector('input[name="kelas-rawat"]:checked').value;
+                const jenisPasien = document.querySelector('input[name="jenis-pasien"]:checked').value;
+                const examDate = document.getElementById('exam-date').value || '-';
 
-            const bp = document.getElementById('clin-bp').value.trim() || '-';
-            const temp = document.getElementById('clin-temp').value || '-';
+                // Data Lab & Penunjang
+                const hb = parseFloat(document.getElementById('bio-hb').value);
+                const albumin = parseFloat(document.getElementById('bio-albumin').value);
+                const gds = parseFloat(document.getElementById('bio-gds').value);
+                const leuko = parseFloat(document.getElementById('bio-leuko').value);
+                const trombo = parseFloat(document.getElementById('bio-trombo').value);
+                const eritro = parseFloat(document.getElementById('bio-eritrosit').value);
+                const aurat = parseFloat(document.getElementById('bio-aurat').value);
+                const koles = parseFloat(document.getElementById('bio-koles').value);
+                const kreatin = parseFloat(document.getElementById('bio-kreatin').value);
 
-            // Gejala GI
-            const mual = document.getElementById('gi-mual').checked;
-            const muntah = document.getElementById('gi-muntah').checked;
-            const diare = document.getElementById('gi-diare').checked;
-            const sulitMenelan = document.getElementById('gi-menelan').checked;
+                const bp = document.getElementById('clin-bp').value.trim() || '-';
+                const temp = document.getElementById('clin-temp').value || '-';
 
-            // Skrining Riwayat Gizi
-            const scrNafsu = document.getElementById('scr-nafsu-makan').checked;
-            const scrAsupan = document.getElementById('scr-asupan').checked;
-            const scrKunyah = document.getElementById('scr-kunyah').checked;
-            const scrBb = document.getElementById('scr-bb-turun').checked;
+                // Gejala GI
+                const mual = document.getElementById('gi-mual').checked;
+                const muntah = document.getElementById('gi-muntah').checked;
+                const diare = document.getElementById('gi-diare').checked;
+                const sulitMenelan = document.getElementById('gi-menelan').checked;
 
-            let listScreening = [];
-            if (scrNafsu) listScreening.push("Nafsu makan menurun");
-            if (scrAsupan) listScreening.push("Asupan berkurang <50%");
-            if (scrKunyah) listScreening.push("Gangguan mengunyah/menelan");
-            if (scrBb) listScreening.push("BB turun tidak direncanakan");
-            
-            const screeningResultText = listScreening.join(", ") || "Skrining Gizi Normal";
+                // Skrining Riwayat Gizi
+                const scrNafsu = document.getElementById('scr-nafsu-makan').checked;
+                const scrAsupan = document.getElementById('scr-asupan').checked;
+                const scrKunyah = document.getElementById('scr-kunyah').checked;
+                const scrBb = document.getElementById('scr-bb-turun').checked;
 
-            // Kebiasaan Makan di Rumah
-            let selectedHabits = [];
-            document.querySelectorAll('.habit-item:checked').forEach(item => {
-                selectedHabits.push(item.value);
-            });
-            const selectedHabitsText = selectedHabits.join(", ") || "Tidak ada kebiasaan menonjol";
-
-            // Rencana Terapi Diet (Checklist Toggles)
-            let selectedDiets = [];
-            document.querySelectorAll('.diet-item:checked').forEach(item => {
-                selectedDiets.push(item.value);
-            });
-            const selectedDietsText = selectedDiets.join(", ") || "Belum Ditentukan / Diet Normal";
-
-            const dietHistoryInput = document.getElementById('diet-history').value.trim();
-            const dietHistoryCombined = `${dietHistoryInput || "-"} | Kebiasaan Rumah: ${selectedHabitsText}`;
-
-            const userIntervention = document.getElementById('nutrition-intervention').value.trim() || '-';
-            const userMonev = document.getElementById('nutrition-monev').value.trim() || '-';
-            
-            // Diagnosa Medis Terstruktur
-            const selectedMedDiag = document.getElementById('med-diagnosis').value;
-            let medDiagnosis = selectedMedDiag;
-            if (selectedMedDiag === 'Lainnya') {
-                medDiagnosis = document.getElementById('med-diagnosis-custom').value.trim() || 'Tulis Diagnosa Manual';
-            }
-
-            if (isNaN(weight) || isNaN(height) || isNaN(calculatedAgeYears)) {
-                alert('Lengkapi dahulu tanggal lahir, tinggi badan, dan berat badan pasien.');
-                return;
-            }
-
-            const heightM = height / 100;
-            const bmi = weight / (heightM * heightM);
-            
-            // PENENTUAN STATUS GIZI DEWASA VS ANAK (BATASAN RUANG ANAK SAMPAI 18 TAHUN)
-            let statusGiziDisplay = "";
-            let statusGiziKategori = "";
-            
-            const isChildUnder5 = (totalMonths <= 60 && totalMonths > 0);
-            const isPediatricUnder18 = (ruangRawat === "Rawat Inap Anak" && calculatedAgeYears < 18);
-
-            if ((isChildUnder5 || isPediatricUnder18) && bmi > 0) {
-                let evalAge = calculatedAgeYears;
-                if (evalAge < 2) evalAge = 2; // Batas minimal tabel interpolasi
-                const childResult = getChildNutritionalStatus(evalAge, gender, bmi);
-                statusGiziKategori = childResult.status;
-                statusGiziDisplay = `${childResult.status} (Anak - Permenkes No. 2/2020, Z-Score Est: ${childResult.z.toFixed(2)} SD)`;
-            } else {
-                if (bmi < 18.5) statusGiziKategori = 'Sangat Kurus (Underweight)';
-                else if (bmi >= 18.5 && bmi < 25.0) statusGiziKategori = 'Normal';
-                else if (bmi >= 25.0 && bmi < 27.0) statusGiziKategori = 'Kelebihan Berat Badan (Overweight)';
-                else statusGiziKategori = 'Obesitas (Obese)';
+                let listScreening = [];
+                if (scrNafsu) listScreening.push("Nafsu makan menurun");
+                if (scrAsupan) listScreening.push("Asupan berkurang <50%");
+                if (scrKunyah) listScreening.push("Gangguan mengunyah/menelan");
+                if (scrBb) listScreening.push("BB turun tidak direncanakan");
                 
-                statusGiziDisplay = `${statusGiziKategori} (Dewasa / Standar Umum)`;
+                const screeningResultText = listScreening.join(", ") || "Skrining Gizi Normal";
+
+                // Kebiasaan Makan di Rumah
+                let selectedHabits = [];
+                document.querySelectorAll('.habit-item:checked').forEach(item => {
+                    selectedHabits.push(item.value);
+                });
+                const selectedHabitsText = selectedHabits.join(", ") || "Tidak ada kebiasaan menonjol";
+
+                // Rencana Terapi Diet (Checklist Toggles)
+                let selectedDiets = [];
+                document.querySelectorAll('.diet-item:checked').forEach(item => {
+                    selectedDiets.push(item.value);
+                });
+                const selectedDietsText = selectedDiets.join(", ") || "Belum Ditentukan / Diet Normal";
+
+                const dietHistoryInput = document.getElementById('diet-history').value.trim();
+                const dietHistoryCombined = `${dietHistoryInput || "-"} | Kebiasaan Rumah: ${selectedHabitsText}`;
+
+                const userIntervention = document.getElementById('nutrition-intervention').value.trim() || '-';
+                const userMonev = document.getElementById('nutrition-monev').value.trim() || '-';
+                
+                // Diagnosa Medis Terstruktur
+                const selectedMedDiag = document.getElementById('med-diagnosis').value;
+                let medDiagnosis = selectedMedDiag;
+                if (selectedMedDiag === 'Lainnya') {
+                    medDiagnosis = document.getElementById('med-diagnosis-custom').value.trim() || 'Tulis Diagnosa Manual';
+                }
+
+                const heightM = height / 100;
+                const bmi = weight / (heightM * heightM);
+                
+                // PENENTUAN STATUS GIZI DEWASA VS ANAK (BATASAN RUANG ANAK SAMPAI 18 TAHUN)
+                let statusGiziDisplay = "";
+                let statusGiziKategori = "";
+                
+                const isChildUnder5 = (totalMonths <= 60 && totalMonths > 0);
+                const isPediatricUnder18 = (ruangRawat === "Rawat Inap Anak" && calculatedAgeYears < 18);
+
+                if ((isChildUnder5 || isPediatricUnder18) && bmi > 0) {
+                    let evalAge = calculatedAgeYears;
+                    if (evalAge < 2) evalAge = 2; // Batas minimal tabel interpolasi
+                    const childResult = getChildNutritionalStatus(evalAge, gender, bmi);
+                    statusGiziKategori = childResult.status;
+                    statusGiziDisplay = `${childResult.status} (Anak - Permenkes No. 2/2020, Z-Score Est: ${childResult.z.toFixed(2)} SD)`;
+                } else {
+                    if (bmi < 18.5) statusGiziKategori = 'Sangat Kurus (Underweight)';
+                    else if (bmi >= 18.5 && bmi < 25.0) statusGiziKategori = 'Normal';
+                    else if (bmi >= 25.0 && bmi < 27.0) statusGiziKategori = 'Kelebihan Berat Badan (Overweight)';
+                    else statusGiziKategori = 'Obesitas (Obese)';
+                    
+                    statusGiziDisplay = `${statusGiziKategori} (Dewasa / Standar Umum)`;
+                }
+
+                let bmr = 0;
+                if (formula === 'mifflin') {
+                    if (gender === 'male') {
+                        bmr = (10 * weight) + (6.25 * height) - (5 * calculatedAgeYears) + 5;
+                    } else {
+                        bmr = (10 * weight) + (6.25 * height) - (5 * calculatedAgeYears) - 161;
+                    }
+                } else if (formula === 'harris') {
+                    if (gender === 'male') {
+                        bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * calculatedAgeYears);
+                    } else {
+                        bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * calculatedAgeYears);
+                    }
+                } else if (formula === 'schofield') {
+                    if (calculatedAgeYears < 3) {
+                        if (gender === 'male') bmr = (59.512 * weight) - 30.4;
+                        else bmr = (58.317 * weight) - 31.1;
+                    } else if (calculatedAgeYears < 10) {
+                        if (gender === 'male') bmr = (22.706 * weight) + 495;
+                        else bmr = (20.315 * weight) + 485.9;
+                    } else {
+                        if (gender === 'male') bmr = (17.686 * weight) + 658.2;
+                        else bmr = (13.384 * weight) + 692.6;
+                    }
+                }
+
+                const tee = bmr * activity * stress;
+
+                const pctProt = parseFloat(document.getElementById('pct-protein').value) / 100;
+                const pctFat = parseFloat(document.getElementById('pct-fat').value) / 100;
+                const pctCarb = parseFloat(document.getElementById('pct-carb').value) / 100;
+
+                const protKcal = tee * pctProt;
+                const fatKcal = tee * pctFat;
+                const carbKcal = tee * pctCarb;
+
+                const protG = protKcal / 4;
+                const fatG = fatKcal / 9;
+                const carbG = carbKcal / 4;
+
+                // Render output layar kanan
+                document.getElementById('out-name').textContent = name;
+                document.getElementById('out-no-rm').textContent = noRm;
+                document.getElementById('out-rawat-info').textContent = `${ruangRawat} / ${kelasRawat}`;
+                document.getElementById('out-jenis-pasien').textContent = jenisPasien;
+                document.getElementById('out-address').textContent = address;
+                document.getElementById('out-age').textContent = `${calculatedAgeYears} Tahun, ${calculatedAgeMonths} Bulan`;
+                document.getElementById('out-anthropometry').textContent = `${height} cm / ${weight} kg`;
+                document.getElementById('out-bmi').textContent = bmi.toFixed(1);
+                document.getElementById('out-status-gizi').textContent = statusGiziDisplay;
+                document.getElementById('out-med-diag').textContent = medDiagnosis;
+                document.getElementById('out-diet-preskripsi').textContent = selectedDietsText;
+
+                document.getElementById('out-bmr').textContent = `${Math.round(bmr)} kcal`;
+                document.getElementById('out-tee').innerHTML = `${Math.round(tee)} <span class="text-sm font-normal text-slate-500">kcal/hari</span>`;
+
+                document.getElementById('out-label-protein').textContent = `Prot (${pctProt * 100}%)`;
+                document.getElementById('out-label-fat').textContent = `Lemak (${pctFat * 100}%)`;
+                document.getElementById('out-label-carb').textContent = `Karb (${pctCarb * 100}%)`;
+
+                document.getElementById('out-protein').textContent = `${protG.toFixed(1)} g`;
+                document.getElementById('out-protein-kcal').textContent = `${Math.round(protKcal)} kcal`;
+                document.getElementById('out-fat').textContent = `${fatG.toFixed(1)} g`;
+                document.getElementById('out-fat-kcal').textContent = `${Math.round(fatKcal)} kcal`;
+                document.getElementById('out-carb').textContent = `${carbG.toFixed(1)} g`;
+                document.getElementById('out-carb-kcal').textContent = `${Math.round(carbKcal)} kcal`;
+
+                // Data Lab Preview
+                document.getElementById('out-bp').textContent = bp;
+                document.getElementById('out-temp').textContent = temp ? `${temp} °C` : '-';
+                document.getElementById('out-hb').textContent = hb ? `${hb} g/dL` : '-';
+                document.getElementById('out-albumin').textContent = albumin ? `${albumin} g/dL` : '-';
+                document.getElementById('out-gds').textContent = gds ? `${gds} mg/dL` : '-';
+                document.getElementById('out-leuko').textContent = leuko ? `${leuko} 10³/µL` : '-';
+                document.getElementById('out-trombo').textContent = trombo ? `${trombo} 10³/µL` : '-';
+                document.getElementById('out-eritrosit').textContent = eritro ? `${eritro} 10⁶/µL` : '-';
+                document.getElementById('out-aurat').textContent = aurat ? `${aurat} mg/dL` : '-';
+                document.getElementById('out-koles').textContent = koles ? `${koles} mg/dL` : '-';
+                document.getElementById('out-kreatin').textContent = kreatin ? `${kreatin} mg/dL` : '-';
+
+                // Menampilkan Intervensi & Monev Manual di Lembar Hasil Cetak
+                document.getElementById('out-intervensi').textContent = userIntervention || '-';
+                document.getElementById('out-monev').textContent = userMonev || '-';
+
+                // Ambil modifikasi manual terakhir dari kolom PES di sebelah kiri
+                const finalPESValue = document.getElementById('nutrition-diagnosis').value;
+                document.getElementById('out-pes').textContent = finalPESValue;
+
+                // Paket data untuk dikirim & diunduh (Menambahkan kunci umur eksplisit)
+                globalCalculatedData = {
+                    noRm: noRm,
+                    nama: name,
+                    dob: dob,
+                    umur: `${calculatedAgeYears} Tahun ${calculatedAgeMonths} Bulan`,
+                    gender: gender === 'male' ? 'Laki-laki' : 'Perempuan',
+                    ruangRawat: ruangRawat,
+                    kelasRawat: kelasRawat,
+                    jenisPasien: jenisPasien,
+                    tanggalMasuk: examDate,
+                    diagnosaMedis: medDiagnosis,
+                    alamat: address,
+                    berat: weight,
+                    tinggi: height,
+                    imt: `${bmi.toFixed(1)} (${statusGiziKategori})`,
+                    bmr: Math.round(bmr),
+                    tee: Math.round(tee),
+                    protein: `${protG.toFixed(1)}g (${Math.round(protKcal)} kcal)`,
+                    lemak: `${fatG.toFixed(1)}g (${Math.round(fatKcal)} kcal)`,
+                    karbohidrat: `${carbG.toFixed(1)}g (${Math.round(carbKcal)} kcal)`,
+                    riwayatDiet: dietHistoryCombined,
+                    diagnosisGizi: finalPESValue,
+                    biokimia: `Hb: ${hb || '-'}, Alb: ${albumin || '-'}, GDS: ${gds || '-'}, Leuko: ${leuko || '-'}, Trombo: ${trombo || '-'}, Eritro: ${eritro || '-'}, AUrat: ${aurat || '-'}, Koles: ${koles || '-'}, Kreatin: ${kreatin || '-'}`,
+                    klinis: `TD: ${bp}, Temp: ${temp || '-'}°C, Gejala: ${gejalas.join(', ') || 'Nihil'}`,
+                    skriningGizi: screeningResultText,
+                    rencanaDiet: selectedDietsText,
+                    intervensi: userIntervention || '-', 
+                    monev: userMonev || '-' 
+                };
+
+                // AKTIFKAN TOMBOL SIMPAN SPREADSHEET (Membuka tanda silang merah)
+                const btnSave = document.getElementById('btn-save-sheets');
+                btnSave.disabled = false;
+                btnSave.classList.remove('opacity-50', 'cursor-not-allowed');
+
+                const syncStatus = document.getElementById('sync-status');
+                syncStatus.textContent = 'Belum Disimpan';
+                syncStatus.className = 'text-[10px] bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full font-bold uppercase no-print';
+            } catch (err) {
+                alert("Kesalahan analisis: " + err.message);
+                console.error(err);
             }
-
-            let bmr = 0;
-            if (formula === 'mifflin') {
-                if (gender === 'male') {
-                    bmr = (10 * weight) + (6.25 * height) - (5 * calculatedAgeYears) + 5;
-                } else {
-                    bmr = (10 * weight) + (6.25 * height) - (5 * calculatedAgeYears) - 161;
-                }
-            } else if (formula === 'harris') {
-                if (gender === 'male') {
-                    bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * calculatedAgeYears);
-                } else {
-                    bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * calculatedAgeYears);
-                }
-            } else if (formula === 'schofield') {
-                if (calculatedAgeYears < 3) {
-                    if (gender === 'male') bmr = (59.512 * weight) - 30.4;
-                    else bmr = (58.317 * weight) - 31.1;
-                } else if (calculatedAgeYears < 10) {
-                    if (gender === 'male') bmr = (22.706 * weight) + 495;
-                    else bmr = (20.315 * weight) + 485.9;
-                } else {
-                    if (gender === 'male') bmr = (17.686 * weight) + 658.2;
-                    else bmr = (13.384 * weight) + 692.6;
-                }
-            }
-
-            const tee = bmr * activity * stress;
-
-            const pctProt = parseFloat(document.getElementById('pct-protein').value) / 100;
-            const pctFat = parseFloat(document.getElementById('pct-fat').value) / 100;
-            const pctCarb = parseFloat(document.getElementById('pct-carb').value) / 100;
-
-            const protKcal = tee * pctProt;
-            const fatKcal = tee * pctFat;
-            const carbKcal = tee * pctCarb;
-
-            const protG = protKcal / 4;
-            const fatG = fatKcal / 9;
-            const carbG = carbKcal / 4;
-
-            // Render output layar kanan
-            document.getElementById('out-name').textContent = name;
-            document.getElementById('out-no-rm').textContent = noRm;
-            document.getElementById('out-rawat-info').textContent = `${ruangRawat} / ${kelasRawat}`;
-            document.getElementById('out-jenis-pasien').textContent = jenisPasien;
-            document.getElementById('out-address').textContent = address;
-            document.getElementById('out-age').textContent = `${calculatedAgeYears} Tahun, ${calculatedAgeMonths} Bulan`;
-            document.getElementById('out-anthropometry').textContent = `${height} cm / ${weight} kg`;
-            document.getElementById('out-bmi').textContent = bmi.toFixed(1);
-            document.getElementById('out-status-gizi').textContent = statusGiziDisplay;
-            document.getElementById('out-med-diag').textContent = medDiagnosis;
-            document.getElementById('out-diet-preskripsi').textContent = selectedDietsText;
-
-            document.getElementById('out-bmr').textContent = `${Math.round(bmr)} kcal`;
-            document.getElementById('out-tee').innerHTML = `${Math.round(tee)} <span class="text-sm font-normal text-slate-500">kcal/hari</span>`;
-
-            document.getElementById('out-label-protein').textContent = `Prot (${pctProt * 100}%)`;
-            document.getElementById('out-label-fat').textContent = `Lemak (${pctFat * 100}%)`;
-            document.getElementById('out-label-carb').textContent = `Karb (${pctCarb * 100}%)`;
-
-            document.getElementById('out-protein').textContent = `${protG.toFixed(1)} g`;
-            document.getElementById('out-protein-kcal').textContent = `${Math.round(protKcal)} kcal`;
-            document.getElementById('out-fat').textContent = `${fatG.toFixed(1)} g`;
-            document.getElementById('out-fat-kcal').textContent = `${Math.round(fatKcal)} kcal`;
-            document.getElementById('out-carb').textContent = `${carbG.toFixed(1)} g`;
-            document.getElementById('out-carb-kcal').textContent = `${Math.round(carbKcal)} kcal`;
-
-            // Data Lab Preview
-            document.getElementById('out-bp').textContent = bp;
-            document.getElementById('out-temp').textContent = temp ? `${temp} °C` : '-';
-            document.getElementById('out-hb').textContent = hb ? `${hb} g/dL` : '-';
-            document.getElementById('out-albumin').textContent = albumin ? `${albumin} g/dL` : '-';
-            document.getElementById('out-gds').textContent = gds ? `${gds} mg/dL` : '-';
-            document.getElementById('out-leuko').textContent = leuko ? `${leuko} 10³/µL` : '-';
-            document.getElementById('out-trombo').textContent = trombo ? `${trombo} 10³/µL` : '-';
-            document.getElementById('out-eritrosit').textContent = eritro ? `${eritro} 10⁶/µL` : '-';
-            document.getElementById('out-aurat').textContent = aurat ? `${aurat} mg/dL` : '-';
-            document.getElementById('out-koles').textContent = koles ? `${koles} mg/dL` : '-';
-            document.getElementById('out-kreatin').textContent = kreatin ? `${kreatin} mg/dL` : '-';
-
-            // Menampilkan Intervensi & Monev Manual di Lembar Hasil Cetak
-            document.getElementById('out-intervensi').textContent = userIntervention || '-';
-            document.getElementById('out-monev').textContent = userMonev || '-';
-
-            // Ambil modifikasi manual terakhir dari kolom PES di sebelah kiri
-            const finalPESValue = document.getElementById('nutrition-diagnosis').value;
-            document.getElementById('out-pes').textContent = finalPESValue;
-
-            // Paket data untuk dikirim & diunduh (Menambahkan kunci umur eksplisit)
-            globalCalculatedData = {
-                noRm: noRm,
-                nama: name,
-                dob: dob,
-                umur: `${calculatedAgeYears} Tahun ${calculatedAgeMonths} Bulan`,
-                gender: gender === 'male' ? 'Laki-laki' : 'Perempuan',
-                ruangRawat: ruangRawat,
-                kelasRawat: kelasRawat,
-                jenisPasien: jenisPasien,
-                tanggalMasuk: examDate,
-                diagnosaMedis: medDiagnosis,
-                alamat: address,
-                berat: weight,
-                tinggi: height,
-                imt: `${bmi.toFixed(1)} (${statusGiziKategori})`,
-                bmr: Math.round(bmr),
-                tee: Math.round(tee),
-                protein: `${protG.toFixed(1)}g (${Math.round(protKcal)} kcal)`,
-                lemak: `${fatG.toFixed(1)}g (${Math.round(fatKcal)} kcal)`,
-                karbohidrat: `${carbG.toFixed(1)}g (${Math.round(carbKcal)} kcal)`,
-                riwayatDiet: dietHistoryCombined,
-                diagnosisGizi: finalPESValue,
-                biokimia: `Hb: ${hb || '-'}, Alb: ${albumin || '-'}, GDS: ${gds || '-'}, Leuko: ${leuko || '-'}, Trombo: ${trombo || '-'}, Eritro: ${eritro || '-'}, AUrat: ${aurat || '-'}, Koles: ${koles || '-'}, Kreatin: ${kreatin || '-'}`,
-                klinis: `TD: ${bp}, Temp: ${temp || '-'}°C, Gejala: ${gejalas.join(', ') || 'Nihil'}`,
-                skriningGizi: screeningResultText,
-                rencanaDiet: selectedDietsText,
-                intervensi: userIntervention || '-', 
-                monev: userMonev || '-' 
-            };
-
-            const btnSave = document.getElementById('btn-save-sheets');
-            btnSave.disabled = false;
-            btnSave.classList.remove('opacity-50', 'cursor-not-allowed');
-
-            const syncStatus = document.getElementById('sync-status');
-            syncStatus.textContent = 'Belum Disimpan';
-            syncStatus.className = 'text-[10px] bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full font-bold uppercase no-print';
         }
 
         // FUNGSI GABUNGAN: Kirim Spreadsheet, Unduh Laporan (.txt), dan Buka Cetak (PDF)
