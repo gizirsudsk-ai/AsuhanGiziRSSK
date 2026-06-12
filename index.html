@@ -1323,4 +1323,54 @@ ${data.monev}
             document.getElementById('pct-carb').value = 60;
             validatePercentages();
 
-            document.getElementById('calculated-age').te
+            document.getElementById('calculated-age').textContent = '-';
+            
+            document.getElementById('out-name').textContent = '-';
+            document.getElementById('out-no-rm').textContent = '-';
+            document.getElementById('out-rawat-info').textContent = '-';
+            document.getElementById('out-jenis-pasien').textContent = '-';
+            document.getElementById('out-address').textContent = '-';
+            document.getElementById('out-age').textContent = '-';
+            document.getElementById('out-anthropometry').textContent = '-';
+            document.getElementById('out-bmi').textContent = '-';
+            document.getElementById('out-status-gizi').textContent = '-';
+            document.getElementById('out-med-diag').textContent = '-';
+            document.getElementById('out-diet-preskripsi').textContent = '-';
+            document.getElementById('out-bmr').textContent = '0 kcal';
+            document.getElementById('out-tee').innerHTML = '0 <span class="text-sm font-normal text-slate-500">kcal/hari</span>';
+            document.getElementById('out-protein').textContent = '0 g';
+            document.getElementById('out-protein-kcal').textContent = '0 kcal';
+            document.getElementById('out-fat').textContent = '0 g';
+            document.getElementById('out-fat-kcal').textContent = '0 kcal';
+            document.getElementById('out-carb').textContent = '0 g';
+            document.getElementById('out-carb-kcal').textContent = '0 kcal';
+            
+            document.getElementById('out-bp').textContent = '-';
+            document.getElementById('out-temp').textContent = '-';
+            document.getElementById('out-hb').textContent = '-';
+            document.getElementById('out-albumin').textContent = '-';
+            document.getElementById('out-gds').textContent = '-';
+            document.getElementById('out-leuko').textContent = '-';
+            document.getElementById('out-trombo').textContent = '-';
+            document.getElementById('out-eritrosit').textContent = '-';
+            document.getElementById('out-aurat').textContent = '-';
+            document.getElementById('out-koles').textContent = '-';
+            document.getElementById('out-kreatin').textContent = '-';
+            document.getElementById('out-pes').textContent = 'Belum dihitung.';
+            document.getElementById('out-intervensi').textContent = '-';
+            document.getElementById('out-monev').textContent = '-';
+            
+            const btnSave = document.getElementById('btn-save-sheets');
+            btnSave.disabled = true;
+            btnSave.className = "flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl shadow-md transition-all opacity-50 cursor-not-allowed text-sm";
+            btnSave.textContent = 'Simpan & Unduh Laporan';
+            
+            const syncStatus = document.getElementById('sync-status');
+            syncStatus.textContent = 'Belum Disimpan';
+            syncStatus.className = 'text-[10px] bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full font-bold uppercase no-print';
+
+            globalCalculatedData = null;
+        }
+    </script>
+</body>
+</html>
