@@ -213,17 +213,14 @@
                             <label class="block text-[10px] font-semibold text-slate-600 uppercase mb-1">GDS (mg/dL)<br><span class="text-[9px] text-slate-400 font-normal">N: &lt; 200</span></label>
                             <input type="number" id="bio-gds" placeholder="mg/dL" class="w-full px-2 py-1.5 border border-slate-300 rounded-lg text-xs">
                         </div>
-                        <!-- Leukosit Menggunakan 1-2 Angka -->
                         <div>
                             <label class="block text-[10px] font-semibold text-slate-600 uppercase mb-1">Leukosit (10³/µL)<br><span class="text-[9px] text-slate-400 font-normal">N: 4.0 - 11.0</span></label>
                             <input type="number" id="bio-leuko" step="0.1" placeholder="cth: 7.5 atau 10" class="w-full px-2 py-1.5 border border-slate-300 rounded-lg text-xs">
                         </div>
-                        <!-- Trombosit Menggunakan 3 Angka -->
                         <div>
                             <label class="block text-[10px] font-semibold text-slate-600 uppercase mb-1">Trombosit (10³/µL)<br><span class="text-[9px] text-slate-400 font-normal">N: 150 - 450</span></label>
                             <input type="number" id="bio-trombo" placeholder="cth: 250" class="w-full px-2 py-1.5 border border-slate-300 rounded-lg text-xs">
                         </div>
-                        <!-- Eritrosit Menggunakan desimal 1-2 Angka -->
                         <div>
                             <label class="block text-[10px] font-semibold text-slate-600 uppercase mb-1">Eritrosit (10⁶/µL)<br><span class="text-[9px] text-slate-400 font-normal">N: 4.0 - 5.5</span></label>
                             <input type="number" id="bio-eritrosit" step="0.1" placeholder="cth: 4.5" class="w-full px-2 py-1.5 border border-slate-300 rounded-lg text-xs">
@@ -575,7 +572,7 @@
         // =========================================================================
         // PENGATURAN TAUTAN GOOGLE SPREADSHEETS (BAKU)
         // =========================================================================
-        const GOOGLE_SHEETS_WEB_APP_URL = "TEMPEL_URL_WEB_APP_ANDA_DISINI";
+        const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw8Fec4ZSkUgFYWh0R3glVH6eAqWUE6kPq6lTkjNWYjFmJwdHRUl2hQKtXrBAMZHiQR3g/exec";
         // =========================================================================
 
         // Referensi Antropometri Anak WHO / Permenkes No. 2 Tahun 2020 (Diperluas dari 2 - 18 Tahun)
@@ -611,6 +608,26 @@
                 radio.addEventListener('change', (e) => {
                     applyRoomFormulaRules(e.target.value);
                 });
+            });
+
+            // Daftarkan Live Trigger Event untuk Auto-PES live generation
+            const triggerIds = [
+                'dob', 'exam-date', 'gender', 'weight', 'height', 'med-diagnosis',
+                'bio-hb', 'bio-albumin', 'bio-gds', 'bio-leuko', 'bio-trombo', 'bio-eritrosit', 'bio-aurat', 'bio-koles', 'bio-kreatin',
+                'gi-mual', 'gi-muntah', 'gi-diare', 'gi-menelan',
+                'scr-nafsu-makan', 'scr-asupan', 'scr-kunyah', 'scr-bb-turun'
+            ];
+            
+            triggerIds.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) {
+                    el.addEventListener('change', autoGeneratePESDraft);
+                }
+            });
+
+            // Set flag edit ketika pengguna mengetik secara manual di kolom PES
+            document.getElementById('nutrition-diagnosis').addEventListener('input', () => {
+                isPesEdited = true;
             });
         });
 
@@ -725,6 +742,9 @@
             const weight = parseFloat(document.getElementById('weight').value);
             const ruangRawat = document.querySelector('input[name="ruang-rawat"]:checked').value;
 
+            // Proteksi Dini Mencegah Perhitungan tak perlu saat data belum diisi
+            if (isNaN(weight) || weight <= 0 || isNaN(height) || height <= 0) return;
+
             // Data Lab & Penunjang
             const hb = parseFloat(document.getElementById('bio-hb').value);
             const albumin = parseFloat(document.getElementById('bio-albumin').value);
@@ -761,7 +781,7 @@
                 bmi = weight / (heightM * heightM);
             }
 
-            // Aturan penentuan diagnosis anak vs dewasa sesuai kriteria klinis terbaru
+            // Aturan penentuan diagnosis anak vs dewasa sesuai kriteria klinis terbaru (Batas 18 Tahun untuk Ruang Anak)
             let statusGiziKategori = "";
             const isChildUnder5 = (totalMonths <= 60 && totalMonths > 0);
             const isPediatricUnder18 = (ruangRawat === "Rawat Inap Anak" && calculatedAgeYears < 18);
@@ -1313,8 +1333,7 @@ ${data.monev}
 
             document.querySelector('input[name="ruang-rawat"][value="Rawat Inap Kebidanan"]').checked = true;
             document.querySelector('input[name="kelas-rawat"][value="Kelas 3"]').checked = true;
-            document.querySelector('input[name="jenis-pasien"][value="General"]').checked = true; // wait, previous general default was "Umum"
-            // Let's ensure default is checked properly:
+            
             const defaultPasien = document.querySelector('input[name="jenis-pasien"][value="Umum"]');
             if (defaultPasien) defaultPasien.checked = true;
 
