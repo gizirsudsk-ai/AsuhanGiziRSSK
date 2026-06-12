@@ -191,7 +191,7 @@
                                 <option value="1.15">Stres Ringan (1.15)</option>
                                 <option value="1.3">Stres Sedang (1.3)</option>
                                 <option value="1.5">Sepsis / Stres Berat (1.5)</option>
-                                <option value="1.7">Luka Burn Berat (1.7)</option>
+                                <option value="1.7">Luka Bakar Berat (1.7)</option>
                             </select>
                         </div>
                     </div>
@@ -223,7 +223,7 @@
                             <label class="block text-[10px] font-semibold text-slate-600 uppercase mb-1">Trombosit (10³/µL)<br><span class="text-[9px] text-slate-400 font-normal">N: 150 - 450</span></label>
                             <input type="number" id="bio-trombo" placeholder="cth: 250" class="w-full px-2 py-1.5 border border-slate-300 rounded-lg text-xs">
                         </div>
-                        <!-- Eritrosit Baru Menggunakan desimal 1-2 Angka -->
+                        <!-- Eritrosit Menggunakan desimal 1-2 Angka -->
                         <div>
                             <label class="block text-[10px] font-semibold text-slate-600 uppercase mb-1">Eritrosit (10⁶/µL)<br><span class="text-[9px] text-slate-400 font-normal">N: 4.0 - 5.5</span></label>
                             <input type="number" id="bio-eritrosit" step="0.1" placeholder="cth: 4.5" class="w-full px-2 py-1.5 border border-slate-300 rounded-lg text-xs">
@@ -506,17 +506,17 @@
                             <div class="bg-amber-50 p-3 rounded-lg border border-amber-100 text-center">
                                 <p class="text-[10px] font-bold text-amber-800 uppercase" id="out-label-protein">Prot (15%)</p>
                                 <p class="text-base font-bold text-amber-950 mt-1" id="out-protein">0 g</p>
-                                <p class="text-[10px] text-amber-700" id="out-protein-kcal">0 kcal</p>
+                                <p class="text-[10px] text-teal-700" id="out-protein-kcal">0 kcal</p>
                             </div>
                             <div class="bg-rose-50 p-3 rounded-lg border border-rose-100 text-center">
                                 <p class="text-[10px] font-bold text-rose-800 uppercase" id="out-label-fat">Lemak (25%)</p>
                                 <p class="text-base font-bold text-rose-950 mt-1" id="out-fat">0 g</p>
-                                <p class="text-[10px] text-rose-700" id="out-fat-kcal">0 kcal</p>
+                                <p class="text-[10px] text-teal-700" id="out-fat-kcal">0 kcal</p>
                             </div>
                             <div class="bg-sky-50 p-3 rounded-lg border border-sky-100 text-center">
                                 <p class="text-[10px] font-bold text-sky-800 uppercase" id="out-label-carb">Karb (60%)</p>
                                 <p class="text-base font-bold text-sky-950 mt-1" id="out-carb">0 g</p>
-                                <p class="text-[10px] text-sky-700" id="out-carb-kcal">0 kcal</p>
+                                <p class="text-[10px] text-teal-700" id="out-carb-kcal">0 kcal</p>
                             </div>
                         </div>
                     </div>
@@ -575,7 +575,7 @@
         // =========================================================================
         // PENGATURAN TAUTAN GOOGLE SPREADSHEETS (BAKU)
         // =========================================================================
-        const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw8Fec4ZSkUgFYWh0R3glVH6eAqWUE6kPq6lTkjNWYjFmJwdHRUl2hQKtXrBAMZHiQR3g/exec";
+        const GOOGLE_SHEETS_WEB_APP_URL = "TEMPEL_URL_WEB_APP_ANDA_DISINI";
         // =========================================================================
 
         // Referensi Antropometri Anak WHO / Permenkes No. 2 Tahun 2020 (Diperluas dari 2 - 18 Tahun)
@@ -935,6 +935,13 @@
                 const muntah = document.getElementById('gi-muntah').checked;
                 const diare = document.getElementById('gi-diare').checked;
                 const sulitMenelan = document.getElementById('gi-menelan').checked;
+
+                // Memperbaiki lingkup variabel gejalas agar tidak terjadi crash 'gejalas is not defined'
+                let gejalas = [];
+                if (mual) gejalas.push('mual');
+                if (muntah) gejalas.push('muntah');
+                if (diare) gejalas.push('diare');
+                if (sulitMenelan) gejalas.push('kesulitan menelan');
 
                 // Skrining Riwayat Gizi
                 const scrNafsu = document.getElementById('scr-nafsu-makan').checked;
@@ -1306,61 +1313,14 @@ ${data.monev}
 
             document.querySelector('input[name="ruang-rawat"][value="Rawat Inap Kebidanan"]').checked = true;
             document.querySelector('input[name="kelas-rawat"][value="Kelas 3"]').checked = true;
-            document.querySelector('input[name="jenis-pasien"][value="Umum"]').checked = true;
+            document.querySelector('input[name="jenis-pasien"][value="General"]').checked = true; // wait, previous general default was "Umum"
+            // Let's ensure default is checked properly:
+            const defaultPasien = document.querySelector('input[name="jenis-pasien"][value="Umum"]');
+            if (defaultPasien) defaultPasien.checked = true;
 
             document.getElementById('pct-protein').value = 15;
             document.getElementById('pct-fat').value = 25;
             document.getElementById('pct-carb').value = 60;
             validatePercentages();
 
-            document.getElementById('calculated-age').textContent = '-';
-            
-            document.getElementById('out-name').textContent = '-';
-            document.getElementById('out-no-rm').textContent = '-';
-            document.getElementById('out-rawat-info').textContent = '-';
-            document.getElementById('out-jenis-pasien').textContent = '-';
-            document.getElementById('out-address').textContent = '-';
-            document.getElementById('out-age').textContent = '-';
-            document.getElementById('out-anthropometry').textContent = '-';
-            document.getElementById('out-bmi').textContent = '-';
-            document.getElementById('out-status-gizi').textContent = '-';
-            document.getElementById('out-med-diag').textContent = '-';
-            document.getElementById('out-diet-preskripsi').textContent = '-';
-            document.getElementById('out-bmr').textContent = '0 kcal';
-            document.getElementById('out-tee').innerHTML = '0 <span class="text-sm font-normal text-slate-500">kcal/hari</span>';
-            document.getElementById('out-protein').textContent = '0 g';
-            document.getElementById('out-protein-kcal').textContent = '0 kcal';
-            document.getElementById('out-fat').textContent = '0 g';
-            document.getElementById('out-fat-kcal').textContent = '0 kcal';
-            document.getElementById('out-carb').textContent = '0 g';
-            document.getElementById('out-carb-kcal').textContent = '0 kcal';
-            
-            document.getElementById('out-bp').textContent = '-';
-            document.getElementById('out-temp').textContent = '-';
-            document.getElementById('out-hb').textContent = '-';
-            document.getElementById('out-albumin').textContent = '-';
-            document.getElementById('out-gds').textContent = '-';
-            document.getElementById('out-leuko').textContent = '-';
-            document.getElementById('out-trombo').textContent = '-';
-            document.getElementById('out-eritrosit').textContent = '-';
-            document.getElementById('out-aurat').textContent = '-';
-            document.getElementById('out-koles').textContent = '-';
-            document.getElementById('out-kreatin').textContent = '-';
-            document.getElementById('out-pes').textContent = 'Belum dihitung.';
-            document.getElementById('out-intervensi').textContent = '-';
-            document.getElementById('out-monev').textContent = '-';
-            
-            const btnSave = document.getElementById('btn-save-sheets');
-            btnSave.disabled = true;
-            btnSave.className = "flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl shadow-md transition-all opacity-50 cursor-not-allowed text-sm";
-            btnSave.textContent = 'Simpan & Unduh Laporan';
-            
-            const syncStatus = document.getElementById('sync-status');
-            syncStatus.textContent = 'Belum Disimpan';
-            syncStatus.className = 'text-[10px] bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full font-bold uppercase no-print';
-
-            globalCalculatedData = null;
-        }
-    </script>
-</body>
-</html>
+            document.getElementById('calculated-age').te
