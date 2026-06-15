@@ -639,6 +639,9 @@
             document.getElementById('nutrition-diagnosis').addEventListener('input', () => {
                 isPesEdited = true;
             });
+
+            // Jalankan draf analisis gizi otomatis sekali di awal saat memuat halaman
+            autoGeneratePESDraft();
         });
 
         // Logika Penguncian Rumus Sesuai Ketetapan Baru (Harris-Benedict untuk Interne, HCU, Kebidanan) [2]
@@ -748,10 +751,9 @@
             if (isPesEdited) return; // Kunci draf jika pengguna sudah mengedit manual
 
             const gender = document.getElementById('gender').value;
-            const height = parseFloat(document.getElementById('height').value);
-            const weight = parseFloat(document.getElementById('weight').value);
+            const height = parseFloat(document.getElementById('height').value) || 0;
+            const weight = parseFloat(document.getElementById('weight').value) || 0;
             
-            // Mengatasi masalah crash agar sistem dapat mengamankan pembacaan data awal jika belum diinput
             const ruangRawatEl = document.querySelector('input[name="ruang-rawat"]:checked');
             const ruangRawat = ruangRawatEl ? ruangRawatEl.value : "Rawat Inap Kebidanan";
 
@@ -979,6 +981,12 @@
                     alert('Mohon isi Berat Badan dengan angka yang valid.');
                     return;
                 }
+
+                // Selalu sinkronkan hitungan umur secara presisi sebelum kalkulasi dimulai
+                calculateAge();
+
+                // Selalu jalankan generate draf PES cerdas otomatis sebelum memindahkan ke preview
+                autoGeneratePESDraft();
 
                 // Ruang Rawat, Kelas Rawat, & Jenis Pasien
                 const ruangRawat = document.querySelector('input[name="ruang-rawat"]:checked').value;
