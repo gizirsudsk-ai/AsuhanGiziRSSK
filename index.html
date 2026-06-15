@@ -213,14 +213,17 @@
                             <label class="block text-[10px] font-semibold text-slate-600 uppercase mb-1">GDS (mg/dL)<br><span class="text-[9px] text-slate-400 font-normal">N: &lt; 200</span></label>
                             <input type="number" id="bio-gds" placeholder="mg/dL" class="w-full px-2 py-1.5 border border-slate-300 rounded-lg text-xs">
                         </div>
+                        <!-- Leukosit Menggunakan 1-2 Angka -->
                         <div>
                             <label class="block text-[10px] font-semibold text-slate-600 uppercase mb-1">Leukosit (10³/µL)<br><span class="text-[9px] text-slate-400 font-normal">N: 4.0 - 11.0</span></label>
                             <input type="number" id="bio-leuko" step="0.1" placeholder="cth: 7.5 atau 10" class="w-full px-2 py-1.5 border border-slate-300 rounded-lg text-xs">
                         </div>
+                        <!-- Trombosit Menggunakan 3 Angka -->
                         <div>
                             <label class="block text-[10px] font-semibold text-slate-600 uppercase mb-1">Trombosit (10³/µL)<br><span class="text-[9px] text-slate-400 font-normal">N: 150 - 450</span></label>
                             <input type="number" id="bio-trombo" placeholder="cth: 250" class="w-full px-2 py-1.5 border border-slate-300 rounded-lg text-xs">
                         </div>
+                        <!-- Eritrosit Menggunakan desimal 1-2 Angka -->
                         <div>
                             <label class="block text-[10px] font-semibold text-slate-600 uppercase mb-1">Eritrosit (10⁶/µL)<br><span class="text-[9px] text-slate-400 font-normal">N: 4.0 - 5.5</span></label>
                             <input type="number" id="bio-eritrosit" step="0.1" placeholder="cth: 4.5" class="w-full px-2 py-1.5 border border-slate-300 rounded-lg text-xs">
@@ -239,14 +242,23 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <!-- Pembaruan Grid Parameter Klinis (Menambahkan HR & RR) -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Tekanan Darah (mmHg)</label>
-                            <input type="text" id="clin-bp" placeholder="cth: 120/80" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                            <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Tensi (mmHg)</label>
+                            <input type="text" id="clin-bp" placeholder="120/80" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs">
                         </div>
                         <div>
-                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Suhu Tubuh (&deg;C)</label>
-                            <input type="number" id="clin-temp" step="0.1" placeholder="cth: 37.5" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                            <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Suhu (&deg;C)</label>
+                            <input type="number" id="clin-temp" step="0.1" placeholder="36.5" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Nadi / HR (bpm)</label>
+                            <input type="number" id="clin-hr" placeholder="cth: 80" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs">
+                        </div>
+                        <div>
+                            <label class="block text-[11px] font-semibold text-slate-600 uppercase mb-1">Napas / RR (x/m)</label>
+                            <input type="number" id="clin-rr" placeholder="cth: 20" class="w-full px-3 py-1.5 border border-slate-300 rounded-lg text-xs">
                         </div>
                     </div>
 
@@ -304,14 +316,14 @@
                     <div class="mb-4 p-4 bg-teal-50/30 border rounded-lg border-teal-100">
                         <h3 class="text-xs font-bold text-teal-900 uppercase mb-3">Kebiasaan Makan di Rumah</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
-                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" class="habit-item" value="Suka manis"> <span>Suka makanan manis (gula, teh, sirup)</span></label>
-                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" class="habit-item" value="Suka asin"> <span>Suka makanan asin / gurih (camilan, saus)</span></label>
-                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" class="habit-item" value="Suka berlemak/gorengan"> <span>Suka makanan berlemak / gorengan</span></label>
-                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" class="habit-item" value="Konsumsi MSG tinggi"> <span>Konsumsi penyedap rasa / MSG tinggi</span></label>
-                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" class="habit-item" value="Jarang sayur/buah"> <span>Jarang konsumsi sayur & buah</span></label>
-                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" class="habit-item" value="Suka minuman kemasan/soda"> <span>Suka minuman kemasan / bersoda</span></label>
-                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" class="habit-item" value="Suka cepat saji / mie instan"> <span>Suka makanan cepat saji / mie instan</span></label>
-                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" class="habit-item" value="Kebiasaan ngemil malam"> <span>Kebiasaan makan/ngemil larut malam</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="habit-manis" class="habit-item" value="Suka manis"> <span>Suka makanan manis (gula, teh, sirup)</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="habit-asin" class="habit-item" value="Suka asin"> <span>Suka makanan asin / gurih (camilan, saus)</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="habit-lemak" class="habit-item" value="Suka berlemak/gorengan"> <span>Suka makanan berlemak / gorengan</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="habit-msg" class="habit-item" value="Konsumsi MSG tinggi"> <span>Konsumsi penyedap rasa / MSG tinggi</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="habit-serat" class="habit-item" value="Jarang sayur/buah"> <span>Jarang konsumsi sayur & buah</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="habit-soda" class="habit-item" value="Suka minuman kemasan/soda"> <span>Suka minuman kemasan / bersoda</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="habit-fastfood" class="habit-item" value="Suka cepat saji / mie instan"> <span>Suka makanan cepat saji / mie instan</span></label>
+                            <label class="flex items-center space-x-2 cursor-pointer"><input type="checkbox" id="habit-ngemil" class="habit-item" value="Kebiasaan ngemil malam"> <span>Kebiasaan makan/ngemil larut malam</span></label>
                         </div>
                     </div>
 
@@ -572,7 +584,7 @@
         // =========================================================================
         // PENGATURAN TAUTAN GOOGLE SPREADSHEETS (BAKU)
         // =========================================================================
-        const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw8Fec4ZSkUgFYWh0R3glVH6eAqWUE6kPq6lTkjNWYjFmJwdHRUl2hQKtXrBAMZHiQR3g/exec";
+        const GOOGLE_SHEETS_WEB_APP_URL = "TEMPEL_URL_WEB_APP_ANDA_DISINI";
         // =========================================================================
 
         // Referensi Antropometri Anak WHO / Permenkes No. 2 Tahun 2020 (Diperluas dari 2 - 18 Tahun)
@@ -608,26 +620,6 @@
                 radio.addEventListener('change', (e) => {
                     applyRoomFormulaRules(e.target.value);
                 });
-            });
-
-            // Daftarkan Live Trigger Event untuk Auto-PES live generation
-            const triggerIds = [
-                'dob', 'exam-date', 'gender', 'weight', 'height', 'med-diagnosis',
-                'bio-hb', 'bio-albumin', 'bio-gds', 'bio-leuko', 'bio-trombo', 'bio-eritrosit', 'bio-aurat', 'bio-koles', 'bio-kreatin',
-                'gi-mual', 'gi-muntah', 'gi-diare', 'gi-menelan',
-                'scr-nafsu-makan', 'scr-asupan', 'scr-kunyah', 'scr-bb-turun'
-            ];
-            
-            triggerIds.forEach(id => {
-                const el = document.getElementById(id);
-                if (el) {
-                    el.addEventListener('change', autoGeneratePESDraft);
-                }
-            });
-
-            // Set flag edit ketika pengguna mengetik secara manual di kolom PES
-            document.getElementById('nutrition-diagnosis').addEventListener('input', () => {
-                isPesEdited = true;
             });
         });
 
@@ -733,7 +725,7 @@
             return { status: "Obesitas (Obese)", z: zScore };
         }
 
-        // FUNGSI UTAMA AUTO-GENERATE PES SECARA LIVE (REAL-TIME)
+        // FUNGSI UTAMA AUTO-GENERATE PES SECARA LIVE (REAL-TIME) - SANGAT CERDAS
         function autoGeneratePESDraft() {
             if (isPesEdited) return; // Kunci draf jika pengguna sudah mengedit manual
 
@@ -742,7 +734,7 @@
             const weight = parseFloat(document.getElementById('weight').value);
             const ruangRawat = document.querySelector('input[name="ruang-rawat"]:checked').value;
 
-            // Proteksi Dini Mencegah Perhitungan tak perlu saat data belum diisi
+            // Proteksi Dini Mencegah Perhitungan tak perlu saat data belum diisi [3]
             if (isNaN(weight) || weight <= 0 || isNaN(height) || height <= 0) return;
 
             // Data Lab & Penunjang
@@ -768,6 +760,16 @@
             const scrKunyah = document.getElementById('scr-kunyah').checked;
             const scrBb = document.getElementById('scr-bb-turun').checked;
 
+            // Kebiasaan Makan di Rumah
+            const hManis = document.getElementById('habit-manis').checked;
+            const hAsin = document.getElementById('habit-asin').checked;
+            const hLemak = document.getElementById('habit-lemak').checked;
+            const hMsg = document.getElementById('habit-msg').checked;
+            const hSerat = document.getElementById('habit-serat').checked;
+            const hSoda = document.getElementById('habit-soda').checked;
+            const hFastfood = document.getElementById('habit-fastfood').checked;
+            const hNgemil = document.getElementById('habit-ngemil').checked;
+
             // Diagnosa Medis Terstruktur
             const selectedMedDiag = document.getElementById('med-diagnosis').value;
             let medDiagnosis = selectedMedDiag;
@@ -781,7 +783,7 @@
                 bmi = weight / (heightM * heightM);
             }
 
-            // Aturan penentuan diagnosis anak vs dewasa sesuai kriteria klinis terbaru (Batas 18 Tahun untuk Ruang Anak)
+            // Aturan penentuan diagnosis anak vs dewasa sesuai kriteria klinis terbaru
             let statusGiziKategori = "";
             const isChildUnder5 = (totalMonths <= 60 && totalMonths > 0);
             const isPediatricUnder18 = (ruangRawat === "Rawat Inap Anak" && calculatedAgeYears < 18);
@@ -800,21 +802,49 @@
 
             let pesList = [];
 
-            // 1. Prioritas Diagnosa Medis ke PES
-            if (medDiagnosis.includes("Diabetes Mellitus")) {
+            // A. EVALUASI CERDAS: KONEKSI PENGETAHUAN, RIWAYAT MAKAN, & KEBIASAAN DI RUMAH (DOMAIN BEHAVIOR/PERILAKU)
+            if (medDiagnosis.includes("Diabetes Mellitus") && (hManis || hSoda)) {
+                pesList.push("[NB.1.1] Kurang pengetahuan terkait makanan dan zat gizi berkaitan dengan kurangnya pemahaman mengenai manajemen karbohidrat pada penderita Diabetes Mellitus ditandai dengan kebiasaan konsumsi makanan manis/minuman bersoda di rumah.");
+            }
+            if (medDiagnosis.includes("Hipertensi") && (hAsin || hMsg)) {
+                pesList.push("[NI.5.1] Kebutuhan natrium berubah berkaitan dengan kurangnya kepatuhan terhadap diet pembatasan garam ditandai dengan kebiasaan konsumsi makanan asin atau kadar penyedap rasa tinggi.");
+            }
+            if (medDiagnosis.includes("Dislipidemia") && (hLemak || hFastfood)) {
+                pesList.push("[NI.5.6.2] Asupan jenis lemak yang tidak tepat berkaitan dengan pola pemilihan makanan yang salah ditandai dengan kebiasaan konsumsi gorengan atau makanan cepat saji.");
+            }
+
+            // Pola Makan Salah / Salah Memilih Makanan (Kondisi Umum Tanpa Penyakit Penyerta)
+            if ((hManis || hSoda) && !medDiagnosis.includes("Diabetes Mellitus")) {
+                pesList.push("[NI.5.4] Asupan karbohidrat berlebih berkaitan dengan salah memilih bahan makanan/minuman tinggi gula ditandai dengan riwayat kebiasaan konsumsi manis/minuman kemasan.");
+            }
+            if ((hAsin || hMsg) && !medDiagnosis.includes("Hipertensi")) {
+                pesList.push("[NB.1.1] Kurang pengetahuan terkait makanan dan gizi berkaitan dengan pemilihan makanan tinggi natrium ditandai dengan kebiasaan konsumsi asin/penyedap rasa tinggi di rumah.");
+            }
+            if ((hLemak || hFastfood) && !medDiagnosis.includes("Dislipidemia")) {
+                pesList.push("[NB.1.1] Kurang pengetahuan terkait zat gizi berkaitan dengan salah memilih makanan (tinggi lemak jenuh) ditandai dengan kebiasaan konsumsi gorengan/makanan cepat saji.");
+            }
+            if (hSerat) {
+                pesList.push("[NI.5.8.1] Asupan serat tidak adekuat berkaitan dengan salah memilih makanan (jarang konsumsi buah/sayur) ditandai dengan riwayat pola makan rendah serat.");
+            }
+            if (hNgemil && (statusGiziKategori.includes("Obesitas") || statusGiziKategori.includes("Gizi Lebih"))) {
+                pesList.push("[NB.1.5] Pola makan yang salah (Disordered Eating Pattern) berkaitan dengan kebiasaan makan/ngemil larut malam ditandai dengan kelebihan berat badan.");
+            }
+
+            // B. Prioritas Kedua: Diagnosa Medis Utama ke PES
+            if (medDiagnosis.includes("Diabetes Mellitus") && !pesList.some(item => item.includes("NI.5.4"))) {
                 let gdsStr = !isNaN(gds) ? ` ditandai dengan hiperglikemia (GDS ${gds} mg/dL)` : "";
                 pesList.push("[NI.5.4] Asupan karbohidrat tidak konsisten berkaitan dengan gangguan metabolisme glukosa sekunder akibat Diabetes Mellitus" + gdsStr + ".");
             } else if (medDiagnosis.includes("Gagal Ginjal") || medDiagnosis.includes("CKD")) {
                 let kreatinStr = !isNaN(kreatin) ? ` ditandai dengan peningkatan kreatinin serum ${kreatin} mg/dL` : "";
                 pesList.push("[NI.5.1] Kebutuhan zat gizi spesifik (Protein/Cairan) berubah berkaitan dengan penurunan fungsi ekskresi ginjal sekunder akibat CKD" + kreatinStr + ".");
-            } else if (medDiagnosis.includes("Sirosis Hepatis")) {
+            } else if (medDiagnosis.includes("Sirosis Hepatis") && !pesList.some(item => item.includes("NC.2.2"))) {
                 let albStr = !isNaN(albumin) ? ` ditandai dengan hipoalbuminemia ${albumin} g/dL` : "";
-                pesList.push("[NC.2.2] Perubahan nilai laboratorium gizi berkaitan dengan penurunan fungsi metabolisme organ hati" + albStr + ".");
-            } else if (medDiagnosis.includes("Hyperemesis Gravidarum")) {
+                pesList.push("[NC.2.2] Perubahan nilai laboratorium gizi berkaitan dengan penurunan fungsi metabolisme organ hati sekunder akibat Sirosis Hepatis" + albStr + ".");
+            } else if (medDiagnosis.includes("Hyperemesis Gravidarum") && !pesList.some(item => item.includes("NI.2.1"))) {
                 pesList.push("[NI.2.1] Asupan oral tidak adekuat berkaitan dengan mual muntah berlebih sekunder akibat kehamilan ditandai dengan diagnosa medis Hyperemesis Gravidarum.");
-            } else if (medDiagnosis.includes("Diare Akut")) {
+            } else if (medDiagnosis.includes("Diare Akut") && !pesList.some(item => item.includes("NC.1.4"))) {
                 pesList.push("[NC.1.4] Gangguan fungsi gastrointestinal berkaitan dengan diare akut ditandai dengan peningkatan frekuensi defekasi cair.");
-            } else if (medDiagnosis.includes("Stroke Non-Hemoragik")) {
+            } else if (medDiagnosis.includes("Stroke Non-Hemoragik") && !pesList.some(item => item.includes("ND.1.2"))) {
                 pesList.push("[ND.1.2] Kesulitan menelan (Disfagia) berkaitan dengan penurunan fungsi neurologis motorik sekunder akibat stroke ditandai dengan refleks menelan yang lemah.");
             } else if (medDiagnosis.includes("Malnutrisi") || medDiagnosis.includes("MEP")) {
                 pesList.push("[NI.1.1] Asupan energi tidak adekuat berkaitan dengan asupan makanan bergizi tidak seimbang ditandai dengan status gizi buruk/kurang.");
@@ -823,11 +853,11 @@
                 pesList.push("[NI.1.1] Peningkatan kebutuhan energi berkaitan dengan hipermetabolisme akut akibat sepsis/infeksi berat" + leukoStr + ".");
             } else if (medDiagnosis.includes("Apendisitis") || medDiagnosis.includes("Post-SC") || medDiagnosis.includes("Post-Op")) {
                 pesList.push("[NI.2.1] Asupan oral tidak adekuat berkaitan dengan masa pemulihan pasca tindakan bedah/Sectio Caesarea ditandai dengan status puasa/diet transisi.");
-            } else if (medDiagnosis.includes("Pre-eklampsia")) {
+            } else if (medDiagnosis.includes("Pre-eklampsia") && !pesList.some(item => item.includes("NI.5.1"))) {
                 pesList.push("[NI.5.1] Kebutuhan natrium dan cairan berubah berkaitan dengan edema sekunder akibat pre-eklampsia ditandai dengan retensi cairan tubuh.");
             }
 
-            // 2. Evaluasi Berdasarkan Skrining Riwayat Gizi
+            // C. Evaluasi Berdasarkan Skrining Riwayat Gizi & BB Turun
             if (scrBb) {
                 pesList.push("[NC.3.2] Penurunan berat badan yang tidak direncanakan berkaitan dengan penurunan asupan makanan ditandai dengan penurunan berat badan > 3 kg.");
             }
@@ -843,7 +873,7 @@
                 }
             }
 
-            // 3. Evaluasi Antropometri
+            // D. Evaluasi Antropometri
             if (statusGiziKategori && (statusGiziKategori.includes("Sangat Kurus") || statusGiziKategori.includes("Kurus"))) {
                 if (!pesList.some(item => item.includes("NC.3.1"))) {
                     pesList.push(`[NC.3.1] Berat Badan Kurang berkaitan dengan asupan makanan tidak adekuat jangka panjang ditandai dengan status gizi: ${statusGiziKategori}.`);
@@ -854,7 +884,7 @@
                 }
             }
 
-            // 4. Gejala Gastrointestinal
+            // E. Gejala Gastrointestinal
             let gejalas = [];
             if (mual) gejalas.push('mual');
             if (muntah) gejalas.push('muntah');
@@ -865,7 +895,7 @@
                 pesList.push("[NC.1.4] Gangguan Fungsi Gastrointestinal berkaitan dengan kondisi patofisiologis saluran cerna ditandai dengan keluhan " + gejalas.join(", ") + ".");
             }
 
-            // 5. Penanda Laboratorium Tambahan (Lab Baru)
+            // F. Penanda Laboratorium Tambahan (Lab Baru)
             if (!isNaN(hb) && hb < 12.0 && !pesList.some(item => item.includes("Anemia"))) {
                 pesList.push("[NC.2.2] Perubahan Nilai Laboratorium Terkait Gizi (Indikasi Anemia) ditandai dengan kadar Hb rendah " + hb + " g/dL.");
             }
@@ -949,6 +979,8 @@
 
                 const bp = document.getElementById('clin-bp').value.trim() || '-';
                 const temp = document.getElementById('clin-temp').value || '-';
+                const hr = document.getElementById('clin-hr').value || '-';
+                const rr = document.getElementById('clin-rr').value || '-';
 
                 // Gejala GI
                 const mual = document.getElementById('gi-mual').checked;
@@ -979,9 +1011,14 @@
 
                 // Kebiasaan Makan di Rumah
                 let selectedHabits = [];
-                document.querySelectorAll('.habit-item:checked').forEach(item => {
-                    selectedHabits.push(item.value);
-                });
+                if (document.getElementById('habit-manis').checked) selectedHabits.push("Suka manis");
+                if (document.getElementById('habit-asin').checked) selectedHabits.push("Suka asin");
+                if (document.getElementById('habit-lemak').checked) selectedHabits.push("Suka berlemak/gorengan");
+                if (document.getElementById('habit-msg').checked) selectedHabits.push("Konsumsi MSG tinggi");
+                if (document.getElementById('habit-serat').checked) selectedHabits.push("Jarang sayur/buah");
+                if (document.getElementById('habit-soda').checked) selectedHabits.push("Suka minuman kemasan/soda");
+                if (document.getElementById('habit-fastfood').checked) selectedHabits.push("Suka cepat saji / mie instan");
+                if (document.getElementById('habit-ngemil').checked) selectedHabits.push("Kebiasaan ngemil malam");
                 const selectedHabitsText = selectedHabits.join(", ") || "Tidak ada kebiasaan menonjol";
 
                 // Rencana Terapi Diet (Checklist Toggles)
@@ -1141,7 +1178,7 @@
                     riwayatDiet: dietHistoryCombined,
                     diagnosisGizi: finalPESValue,
                     biokimia: `Hb: ${hb || '-'}, Alb: ${albumin || '-'}, GDS: ${gds || '-'}, Leuko: ${leuko || '-'}, Trombo: ${trombo || '-'}, Eritro: ${eritro || '-'}, AUrat: ${aurat || '-'}, Koles: ${koles || '-'}, Kreatin: ${kreatin || '-'}`,
-                    klinis: `TD: ${bp}, Temp: ${temp || '-'}°C, Gejala: ${gejalas.join(', ') || 'Nihil'}`,
+                    klinis: `TD: ${bp}, Temp: ${temp || '-'}°C, HR: ${hr} bpm, RR: ${rr} x/m, Gejala: ${gejalas.join(', ') || 'Nihil'}`,
                     skriningGizi: screeningResultText,
                     rencanaDiet: selectedDietsText,
                     intervensi: userIntervention || '-', 
@@ -1304,6 +1341,8 @@ ${data.monev}
 
             document.getElementById('clin-bp').value = '';
             document.getElementById('clin-temp').value = '';
+            document.getElementById('clin-hr').value = '';
+            document.getElementById('clin-rr').value = '';
             document.getElementById('diet-history').value = '';
             document.getElementById('med-diagnosis').value = 'Diabetes Mellitus Tipe 2';
             document.getElementById('med-diagnosis-custom').value = '';
