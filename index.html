@@ -31,6 +31,32 @@
             
             <!-- FORM INPUT (KOLOM KIRI) -->
             <section class="lg:col-span-7 space-y-6 no-print">
+                <!-- FITUR PEMBACA FOTO ASKEP MANUAL (AI SCANNER) -->
+                <div class="bg-gradient-to-r from-teal-800 to-cyan-800 p-6 rounded-xl shadow-md text-white">
+                    <h2 class="text-lg font-bold flex items-center gap-2 mb-2">
+                        <span>📸 Scan Foto Catatan Gizi Manual</span>
+                        <span class="bg-amber-400 text-teal-950 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase">Fitur AI</span>
+                    </h2>
+                    <p class="text-xs text-teal-100 mb-4 leading-relaxed">
+                        Ambil foto atau unggah gambar form asuhan gizi manual/kertas catatan rekam medis. AI akan mendeteksi tulisan secara otomatis dan mengisi kolom formulir di bawah.
+                    </p>
+                    
+                    <div class="flex flex-col sm:flex-row items-center gap-3">
+                        <label class="w-full sm:w-auto flex-1 flex flex-col items-center justify-center px-4 py-3 bg-white text-teal-800 rounded-lg shadow-sm tracking-wide uppercase border border-slate-200 cursor-pointer hover:bg-teal-50 transition-all">
+                            <span class="text-xs font-bold flex items-center gap-2" id="upload-label">
+                                📂 Pilih / Ambil Foto Catatan
+                            </span>
+                            <input type="file" id="image-ocr-input" accept="image/*" class="hidden" onchange="processOcrImage(this)">
+                        </label>
+                        <div id="ocr-loader" class="hidden flex items-center gap-2 text-xs font-semibold text-amber-300 animate-pulse py-2">
+                            <svg class="animate-spin h-5 w-5 text-amber-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Menganalisis tulisan medis...
+                        </div>
+                    </div>
+                </div>
                 
                 <!-- 1. Identitas Pasien & Waktu Pemeriksaan -->
                 <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
@@ -93,8 +119,8 @@
                                     <span class="block py-2 px-1 text-xs font-semibold border border-slate-300 rounded-lg hover:bg-slate-50 peer-checked:bg-teal-700 peer-checked:text-white peer-checked:border-teal-700 transition-all">Rawat Inap Anak</span>
                                 </label>
                                 <label class="text-center cursor-pointer">
-                                    <input type="radio" name="ruang-rawat" value="Rawat Inap Interne" class="sr-only peer">
-                                    <span class="block py-2 px-1 text-xs font-semibold border border-slate-300 rounded-lg hover:bg-slate-50 peer-checked:bg-teal-700 peer-checked:text-white peer-checked:border-teal-700 transition-all">Rawat Inap Interne</span>
+                                    <input type="radio" name="ruang-rawat" value="Rawat Inap Penyakit Dalam" class="sr-only peer">
+                                    <span class="block py-2 px-1 text-xs font-semibold border border-slate-300 rounded-lg hover:bg-slate-50 peer-checked:bg-teal-700 peer-checked:text-white peer-checked:border-teal-700 transition-all">Rawat Inap Penyakit Dalam</span>
                                 </label>
                                 <label class="text-center cursor-pointer">
                                     <input type="radio" name="ruang-rawat" value="Rawat Inap Bedah" class="sr-only peer">
@@ -581,7 +607,7 @@
         // =========================================================================
         // PENGATURAN TAUTAN GOOGLE SPREADSHEETS (BAKU)
         // =========================================================================
-        const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyge5f0k1ckkrxlFY3zWUSHJrGV9GryJNd4wA9fcIoSAGOtEjUyXzx1EaL1dCPOeYmpvQ/exec";
+        const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyNgDRd9MzgnU55-Obd6pji8TEgxZ9Xn39tIIabf7aAbYzIf2tzCt3W4GlVxYza-s8K/exec";
         // =========================================================================
 
         // Referensi Antropometri Anak WHO / Permenkes No. 2 Tahun 2020 (Diperluas dari 2 - 18 Tahun)
@@ -612,7 +638,7 @@
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('exam-date').value = today;
 
-            // Penguncian Rumus Rawat Inap Kebidanan, Interne, & HCU ke Harris-Benedict (LOCKED) [2]
+            // Penguncian Rumus Rawat Inap Kebidanan, Rawat Inap Penyakit Dalam, & HCU ke Harris-Benedict (LOCKED) [2]
             document.querySelectorAll('input[name="ruang-rawat"]').forEach(radio => {
                 radio.addEventListener('change', (e) => {
                     applyRoomFormulaRules(e.target.value);
@@ -644,11 +670,11 @@
             autoGeneratePESDraft();
         });
 
-        // Logika Penguncian Rumus Sesuai Ketetapan Baru (Harris-Benedict untuk Interne, HCU, Kebidanan) [2]
+        // Logika Penguncian Rumus Sesuai Ketetapan Baru (Harris-Benedict untuk Penyakit Dalam, HCU, Kebidanan) [2]
         function applyRoomFormulaRules(room) {
             const formulaSelect = document.getElementById('formula');
             
-            if (room === "Rawat Inap Interne" || room === "HCU" || room === "Rawat Inap Kebidanan") {
+            if (room === "Rawat Inap Penyakit Dalam" || room === "HCU" || room === "Rawat Inap Kebidanan") {
                 formulaSelect.value = "harris"; // LOCKED to Harris-Benedict [2]
                 formulaSelect.disabled = true;
             } else {
@@ -1347,6 +1373,177 @@ ${data.monev}
             link.click();
             document.body.removeChild(link);
         }
+        // Fungsi Membaca File Gambar dan Mengubahnya Menjadi Base64
+function processOcrImage(input) {
+    const file = input.files[0];
+    if (!file) return;
+
+    const label = document.getElementById('upload-label');
+    const loader = document.getElementById('ocr-loader');
+    
+    label.textContent = "Sedang Membaca Berkas...";
+    loader.classList.remove('hidden');
+
+    const reader = new FileReader();
+    reader.onloadend = function() {
+        const base64String = reader.result;
+        sendImageToAppsScript(base64String);
+    };
+    reader.readAsDataURL(file);
+}
+
+// Mengirimkan data Base64 Gambar ke Google Apps Script untuk Diproses Gemini
+function sendImageToAppsScript(base64Data) {
+    const apiUrL = GOOGLE_SHEETS_WEB_APP_URL;
+    const label = document.getElementById('upload-label');
+    const loader = document.getElementById('ocr-loader');
+
+    if (apiUrL === "TEMPEL_URL_WEB_APP_ANDA_DISINI" || apiUrL.trim() === "") {
+        alert('Mohon tautkan GOOGLE_SHEETS_WEB_APP_URL di file HTML Anda terlebih dahulu.');
+        label.textContent = "📂 Pilih / Ambil Foto Catatan";
+        loader.classList.add('hidden');
+        return;
+    }
+
+    fetch(apiUrL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'text/plain' // Menggunakan text/plain agar menghindari kendala CORS pre-flight
+        },
+        body: JSON.stringify({
+            action: "parseImage",
+            imageBase64: base64Data
+        })
+    })
+    .then(response => response.json())
+    .then(result => {
+        label.textContent = "📂 Pilih / Ambil Foto Catatan";
+        loader.classList.add('hidden');
+
+        if (result.status === "success" && result.data) {
+            populateFormWithOcrData(result.data);
+            alert("Ekstraksi data berhasil diselesaikan. Silakan tinjau kembali data yang terisi.");
+        } else {
+            alert("Ekstraksi gagal: " + (result.message || "Struktur berkas tidak terbaca"));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('Terjadi kendala jaringan saat memproses gambar: ' + error.message);
+        label.textContent = "📂 Pilih / Ambil Foto Catatan";
+        loader.classList.add('hidden');
+    });
+}
+
+// Memasukkan Data Hasil Ekstraksi Gemini ke Masing-Masing Kolom Form
+function populateFormWithOcrData(data) {
+    if (!data) return;
+
+    // 1. Identitas
+    if (data.name) document.getElementById('name').value = data.name;
+    if (data.noRm) document.getElementById('no-rm').value = data.noRm;
+    if (data.gender) document.getElementById('gender').value = data.gender;
+    if (data.dob) {
+        document.getElementById('dob').value = data.dob;
+        calculateAge(); // Hitung ulang umur otomatis
+    }
+    if (data.examDate) document.getElementById('exam-date').value = data.examDate;
+    if (data.address) document.getElementById('address').value = data.address;
+
+    // 2. Status Rawat (Radio Button)
+    if (data.ruangRawat) {
+        let normalizedRoom = data.ruangRawat;
+        const roomLower = normalizedRoom.toLowerCase();
+    if (roomLower.includes('interne') || roomLower.includes('interna') || roomLower.includes('penyakit dalam') || roomLower.includes('ipd')) {
+        normalizedRoom = "Rawat Inap Penyakit Dalam";
+    }
+    const radio = document.querySelector(`input[name="ruang-rawat"][value="${normalizedRoom}"]`);
+    if (radio) {
+        radio.checked = true;
+        applyRoomFormulaRules(normalizedRoom);
+    }
+}
+
+    // 3. Antropometri
+    if (data.height) document.getElementById('height').value = data.height;
+    if (data.weight) document.getElementById('weight').value = data.weight;
+
+    // 4. Biokimia & Parameter Laboratorium
+    if (data.hb) document.getElementById('bio-hb').value = data.hb;
+    if (data.albumin) document.getElementById('bio-albumin').value = data.albumin;
+    if (data.gds) document.getElementById('bio-gds').value = data.gds;
+    if (data.leuko) document.getElementById('bio-leuko').value = data.leuko;
+    if (data.trombo) document.getElementById('bio-trombo').value = data.trombo;
+    if (data.eritrosit) document.getElementById('bio-eritrosit').value = data.eritrosit;
+    if (data.aurat) document.getElementById('bio-aurat').value = data.aurat;
+    if (data.koles) document.getElementById('bio-koles').value = data.koles;
+    if (data.kreatin) document.getElementById('bio-kreatin').value = data.kreatin;
+
+    // 5. Parameter Klinis
+    if (data.bp) document.getElementById('clin-bp').value = data.bp;
+    if (data.temp) document.getElementById('clin-temp').value = data.temp;
+    if (data.hr) document.getElementById('clin-hr').value = data.hr;
+    if (data.rr) document.getElementById('clin-rr').value = data.rr;
+
+    // 6. Gejala GI (Checkbox)
+    document.getElementById('gi-mual').checked = !!data.mual;
+    document.getElementById('gi-muntah').checked = !!data.muntah;
+    document.getElementById('gi-diare').checked = !!data.diare;
+    document.getElementById('gi-menelan').checked = !!data.menelan;
+
+    // 7. Skrining Riwayat Gizi (Checkbox)
+    document.getElementById('scr-nafsu-makan').checked = !!data.scrNafsuMakan;
+    document.getElementById('scr-asupan').checked = !!data.scrAsupan;
+    document.getElementById('scr-kunyah').checked = !!data.scrKunyah;
+    document.getElementById('scr-bb-turun').checked = !!data.scrBbTurun;
+
+    // 8. Kebiasaan Makan di Rumah
+    if (data.habits && Array.isArray(data.habits)) {
+        // Uncheck all first
+        document.querySelectorAll('.habit-item').forEach(el => el.checked = false);
+        // Check matching
+        data.habits.forEach(habitVal => {
+            const el = Array.from(document.querySelectorAll('.habit-item')).find(x => x.value.toLowerCase().includes(habitVal.toLowerCase()) || habitVal.toLowerCase().includes(x.value.toLowerCase()));
+            if (el) el.checked = true;
+        });
+    }
+
+    // 9. Preskripsi Terapi Diet Terpilih
+    if (data.diets && Array.isArray(data.diets)) {
+        document.querySelectorAll('.diet-item').forEach(el => el.checked = false);
+        data.diets.forEach(dietVal => {
+            const el = Array.from(document.querySelectorAll('.diet-item')).find(x => x.value.toLowerCase().includes(dietVal.toLowerCase()) || dietVal.toLowerCase().includes(x.value.toLowerCase()));
+            if (el) el.checked = true;
+        });
+    }
+
+    // 10. Catatan Tambahan Riwayat Diet & Diagnosa Medis Utama
+    if (data.dietHistory) document.getElementById('diet-history').value = data.dietHistory;
+    
+    if (data.medDiagnosis) {
+        const select = document.getElementById('med-diagnosis');
+        const hasOption = Array.from(select.options).some(opt => opt.value === data.medDiagnosis);
+        if (hasOption) {
+            select.value = data.medDiagnosis;
+            document.getElementById('custom-med-diag-container').classList.add('hidden');
+        } else {
+            select.value = "Lainnya";
+            document.getElementById('custom-med-diag-container').classList.remove('hidden');
+            document.getElementById('med-diagnosis-custom').value = data.medDiagnosis;
+        }
+    }
+
+    // 11. Narasi Diagnosa Gizi, Intervensi, dan Monev (Bila ada coretan khusus)
+    if (data.nutritionDiagnosis) {
+        document.getElementById('nutrition-diagnosis').value = data.nutritionDiagnosis;
+        isPesEdited = true; // Tandai agar draft auto-generasi tidak menimpa hasil ekstraksi kertas
+    }
+    if (data.nutritionIntervention) document.getElementById('nutrition-intervention').value = data.nutritionIntervention;
+    if (data.nutritionMonev) document.getElementById('nutrition-monev').value = data.nutritionMonev;
+
+    // Trigger kalkulasi internal agar seluruh angka kalkulator tersinkronisasi
+    calculateNutrition();
+}
 
         function resetForm() {
             isPesEdited = false; // Reset status pelacak edit manual PES
