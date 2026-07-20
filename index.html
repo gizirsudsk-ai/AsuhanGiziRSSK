@@ -1413,12 +1413,13 @@ function fileToBase64(file) {
 
 // Mengirimkan Array Gambar Base64 ke Google Apps Script
 function sendImagesToAppsScript(base64Array) {
-    const apiUrL = https://script.google.com/macros/s/AKfycbz1Q-O5gxmqhnGZpCMA5j35C4Zg79N0gp1QfrxUmH-_izZXaF5M2SchOjYA52QvpIAM2Q/exec;
+    const apiUrL = GOOGLE_SHEETS_WEB_APP_URL;
     const label = document.getElementById('upload-label');
     const loader = document.getElementById('ocr-loader');
 
-    if (apiUrL === "https://script.google.com/macros/s/AKfycbz1Q-O5gxmqhnGZpCMA5j35C4Zg79N0gp1QfrxUmH-_izZXaF5M2SchOjYA52QvpIAM2Q/exec" || apiUrL.trim() === "") {
-        alert('Tolong edit file HTML ini terlebih dahulu dan ganti nilai variabel "GOOGLE_SHEETS_WEB_APP_URL" dengan tautan Apps Script Anda.');
+    // Pemeriksaan disederhanakan: hanya memblokir jika kosong atau masih berupa teks panduan bawaan
+    if (!apiUrL || apiUrL.includes("TEMPEL_URL") || apiUrL.trim() === "") {
+        alert('Tautan Google Apps Script belum terpasang dengan benar di bagian atas kode HTML Anda.');
         label.textContent = "📂 Pilih / Ambil Foto Catatan";
         loader.classList.add('hidden');
         return;
@@ -1431,7 +1432,7 @@ function sendImagesToAppsScript(base64Array) {
         },
         body: JSON.stringify({
             action: "parseImage",
-            imagesBase64: base64Array // Mengirimkan banyak gambar sekaligus
+            imagesBase64: base64Array
         })
     })
     .then(response => response.json())
