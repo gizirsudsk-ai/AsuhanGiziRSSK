@@ -1253,12 +1253,11 @@
             }
         }
 
-        // FUNGSI GABUNGAN: Kirim Spreadsheet, Unduh Laporan (.txt), dan Buka Cetak (PDF)
         function saveAndDownload() {
             try {
                 const apiUrL = GOOGLE_SHEETS_WEB_APP_URL;
-                if (apiUrL === "TEMPEL_URL_WEB_APP_ANDA_DISINI" || apiUrL.trim() === "") {
-                    alert('Tolong edit file HTML ini terlebih dahulu dan ganti nilai variabel "GOOGLE_SHEETS_WEB_APP_URL" dengan tautan Apps Script Google Sheets Anda.');
+                if (!apiUrL || apiUrL.includes("TEMPEL_URL") || apiUrL.trim() === "") {
+                    alert('Tautan Google Apps Script belum terpasang dengan benar di bagian atas kode HTML Anda.');
                     return;
                 }
 
@@ -1267,7 +1266,6 @@
                     return;
                 }
 
-                // Sync Diagnosa Gizi, Intervensi, dan Monev Manual Terakhir dari Input Form
                 const latestUserEditedPes = document.getElementById('nutrition-diagnosis').value;
                 const latestIntervention = document.getElementById('nutrition-intervention').value;
                 const latestMonev = document.getElementById('nutrition-monev').value;
@@ -1276,7 +1274,6 @@
                 globalCalculatedData.intervensi = latestIntervention || '-';
                 globalCalculatedData.monev = latestMonev || '-';
 
-                // Update Lembar Output Hasil
                 document.getElementById('out-pes').textContent = latestUserEditedPes;
                 document.getElementById('out-intervensi').textContent = latestIntervention || '-';
                 document.getElementById('out-monev').textContent = latestMonev || '-';
@@ -1287,7 +1284,6 @@
                 btnSave.textContent = 'Menyimpan & Menyinkronkan...';
                 btnSave.disabled = true;
 
-                // 1. Proses Pengiriman Real-time ke Google Spreadsheet
                 fetch(apiUrL, {
                     method: 'POST',
                     mode: 'no-cors',
@@ -1303,10 +1299,8 @@
                     syncStatus.textContent = 'Sinkron Terjaga';
                     syncStatus.className = 'text-[10px] bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-full font-bold uppercase no-print';
 
-                    // 2. Unduh Berkas Teks (.txt) Data Pasien ke Komputer Lokal
                     downloadSummaryFile(globalCalculatedData);
 
-                    // 3. Picu Dialog Cetak Sistem Otomatis (Guna disimpan langsung sebagai PDF)
                     setTimeout(() => {
                         window.print();
                     }, 800);
@@ -1315,7 +1309,6 @@
                     console.error('Error:', error);
                     alert('Gagal menyambung ke server. Data tetap dapat diunduh secara lokal. Kesalahan: ' + error.message);
                     
-                    // Fallback unduh berkas lokal jika jaringan terganggu
                     downloadSummaryFile(globalCalculatedData);
                     
                     btnSave.textContent = 'Simpan & Unduh Laporan';
@@ -1327,7 +1320,6 @@
             }
         }
 
-        // Fungsi Generate & Download File Teks Laporan
         function downloadSummaryFile(data) {
             const content = `LAPORAN ASUHAN GIZI PASIEN
 ==================================================
@@ -1373,198 +1365,302 @@ ${data.monev}
             link.click();
             document.body.removeChild(link);
         }
-        // Fungsi Membaca File Gambar dan Mengubahnya Menjadi Base64
-function processOcrImage(input) {
-    const files = input.files;
-    if (!files || files.length === 0) return;
 
-    const label = document.getElementById('upload-label');
-    const loader = document.getElementById('ocr-loader');
-    
-    label.textContent = `Membaca ${files.length} Berkas...`;
-    loader.classList.remove('hidden');
+        // =========================================================================
+        // KODE JAVASCRIPT INTEGRASI OCR / SCAN MULTI-HALAMAN
+        // =========================================================================
+        function processOcrImage(input) {
+            const files = input.files;
+            if (!files || files.length === 0) return;
 
-    const promises = [];
-    for (let i = 0; i < files.length; i++) {
-        promises.push(fileToBase64(files[i]));
-    }
+            const label = document.getElementById('upload-label');
+            const loader = document.getElementById('ocr-loader');
+            
+            label.textContent = `Membaca ${files.length} Berkas...`;
+            loader.classList.remove('hidden');
 
-    // Tunggu seluruh file selesai dikonversi ke Base64
-    Promise.all(promises)
-        .then(base64Array => {
-            sendImagesToAppsScript(base64Array);
-        })
-        .catch(err => {
-            alert("Gagal membaca berkas gambar: " + err.message);
-            label.textContent = "📂 Pilih / Ambil Foto Catatan";
-            loader.classList.add('hidden');
-        });
-}
+            const promises = [];
+            for (let i = 0; i < files.length; i++) {
+                promises.push(fileToBase64(files[i]));
+            }
 
-// Helper untuk Mengubah File ke Base64
-function fileToBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
-        reader.readAsDataURL(file);
-    });
-}
-
-// Mengirimkan Array Gambar Base64 ke Google Apps Script
-function sendImagesToAppsScript(base64Array) {
-    const apiUrL = GOOGLE_SHEETS_WEB_APP_URL;
-    const label = document.getElementById('upload-label');
-    const loader = document.getElementById('ocr-loader');
-
-    // Pemeriksaan disederhanakan: hanya memblokir jika kosong atau masih berupa teks panduan bawaan
-    if (!apiUrL || apiUrL.includes("TEMPEL_URL") || apiUrL.trim() === "") {
-        alert('Tautan Google Apps Script belum terpasang dengan benar di bagian atas kode HTML Anda.');
-        label.textContent = "📂 Pilih / Ambil Foto Catatan";
-        loader.classList.add('hidden');
-        return;
-    }
-
-    fetch(apiUrL, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'text/plain'
-        },
-        body: JSON.stringify({
-            action: "parseImage",
-            imagesBase64: base64Array
-        })
-    })
-    .then(response => response.json())
-    .then(result => {
-        label.textContent = "📂 Pilih / Ambil Foto Catatan";
-        loader.classList.add('hidden');
-
-        if (result.status === "success" && result.data) {
-            populateFormWithOcrData(result.data);
-            alert("Ekstraksi data dari kedua halaman asuhan gizi berhasil digabungkan.");
-        } else {
-            alert("Analisis gagal: " + (result.message || "Teks medis tidak dapat terbaca"));
+            Promise.all(promises)
+                .then(base64Array => {
+                    sendImagesToAppsScript(base64Array);
+                })
+                .catch(err => {
+                    alert("Gagal membaca berkas gambar: " + err.message);
+                    label.textContent = "📂 Pilih / Ambil Foto Catatan";
+                    loader.classList.add('hidden');
+                });
         }
-    })
-    .catch(error => {
-        console.error('Error:', error);
-        alert('Gagal menyambung ke server OCR: ' + error.message);
-        label.textContent = "📂 Pilih / Ambil Foto Catatan";
-        loader.classList.add('hidden');
-    });
-}
 
-// Memasukkan Data Hasil Ekstraksi Gemini ke Masing-Masing Kolom Form
-function populateFormWithOcrData(data) {
-    if (!data) return;
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = error => reject(error);
+                reader.readAsDataURL(file);
+            });
+        }
 
-    // 1. Identitas
-    if (data.name) document.getElementById('name').value = data.name;
-    if (data.noRm) document.getElementById('no-rm').value = data.noRm;
-    if (data.gender) document.getElementById('gender').value = data.gender;
-    if (data.dob) {
-        document.getElementById('dob').value = data.dob;
-        calculateAge(); // Hitung ulang umur otomatis
-    }
-    if (data.examDate) document.getElementById('exam-date').value = data.examDate;
-    if (data.address) document.getElementById('address').value = data.address;
+        function sendImagesToAppsScript(base64Array) {
+            const apiUrL = GOOGLE_SHEETS_WEB_APP_URL;
+            const label = document.getElementById('upload-label');
+            const loader = document.getElementById('ocr-loader');
 
-    // 2. Status Rawat (Radio Button)
-    if (data.ruangRawat) {
-        let normalizedRoom = data.ruangRawat;
-        const roomLower = normalizedRoom.toLowerCase();
-    if (roomLower.includes('interne') || roomLower.includes('interna') || roomLower.includes('penyakit dalam') || roomLower.includes('ipd')) {
-        normalizedRoom = "Rawat Inap Penyakit Dalam";
-    }
-    const radio = document.querySelector(`input[name="ruang-rawat"][value="${normalizedRoom}"]`);
-    if (radio) {
-        radio.checked = true;
-        applyRoomFormulaRules(normalizedRoom);
-    }
-}
+            if (!apiUrL || apiUrL.includes("TEMPEL_URL") || apiUrL.trim() === "") {
+                alert('Tautan Google Apps Script belum terpasang dengan benar di bagian atas kode HTML Anda.');
+                label.textContent = "📂 Pilih / Ambil Foto Catatan";
+                loader.classList.add('hidden');
+                return;
+            }
 
-    // 3. Antropometri
-    if (data.height) document.getElementById('height').value = data.height;
-    if (data.weight) document.getElementById('weight').value = data.weight;
+            fetch(apiUrL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'text/plain'
+                },
+                body: JSON.stringify({
+                    action: "parseImage",
+                    imagesBase64: base64Array
+                })
+            })
+            .then(response => response.json())
+            .then(result => {
+                label.textContent = "📂 Pilih / Ambil Foto Catatan";
+                loader.classList.add('hidden');
 
-    // 4. Biokimia & Parameter Laboratorium
-    if (data.hb) document.getElementById('bio-hb').value = data.hb;
-    if (data.albumin) document.getElementById('bio-albumin').value = data.albumin;
-    if (data.gds) document.getElementById('bio-gds').value = data.gds;
-    if (data.leuko) document.getElementById('bio-leuko').value = data.leuko;
-    if (data.trombo) document.getElementById('bio-trombo').value = data.trombo;
-    if (data.eritrosit) document.getElementById('bio-eritrosit').value = data.eritrosit;
-    if (data.aurat) document.getElementById('bio-aurat').value = data.aurat;
-    if (data.koles) document.getElementById('bio-koles').value = data.koles;
-    if (data.kreatin) document.getElementById('bio-kreatin').value = data.kreatin;
+                if (result.status === "success" && result.data) {
+                    populateFormWithOcrData(result.data);
+                    alert("Ekstraksi data dari kedua halaman asuhan gizi berhasil digabungkan.");
+                } else {
+                    alert("Analisis gagal: " + (result.message || "Teks medis tidak dapat terbaca"));
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Gagal menyambung ke server OCR: ' + error.message);
+                label.textContent = "📂 Pilih / Ambil Foto Catatan";
+                loader.classList.add('hidden');
+            });
+        }
 
-    // 5. Parameter Klinis
-    if (data.bp) document.getElementById('clin-bp').value = data.bp;
-    if (data.temp) document.getElementById('clin-temp').value = data.temp;
-    if (data.hr) document.getElementById('clin-hr').value = data.hr;
-    if (data.rr) document.getElementById('clin-rr').value = data.rr;
+        function populateFormWithOcrData(data) {
+            if (!data) return;
 
-    // 6. Gejala GI (Checkbox)
-    document.getElementById('gi-mual').checked = !!data.mual;
-    document.getElementById('gi-muntah').checked = !!data.muntah;
-    document.getElementById('gi-diare').checked = !!data.diare;
-    document.getElementById('gi-menelan').checked = !!data.menelan;
+            // 1. Identitas
+            if (data.name) document.getElementById('name').value = data.name;
+            if (data.noRm) document.getElementById('no-rm').value = data.noRm;
+            if (data.gender) document.getElementById('gender').value = data.gender;
+            if (data.dob) {
+                document.getElementById('dob').value = data.dob;
+                calculateAge();
+            }
+            if (data.examDate) document.getElementById('exam-date').value = data.examDate;
+            if (data.address) document.getElementById('address').value = data.address;
 
-    // 7. Skrining Riwayat Gizi (Checkbox)
-    document.getElementById('scr-nafsu-makan').checked = !!data.scrNafsuMakan;
-    document.getElementById('scr-asupan').checked = !!data.scrAsupan;
-    document.getElementById('scr-kunyah').checked = !!data.scrKunyah;
-    document.getElementById('scr-bb-turun').checked = !!data.scrBbTurun;
+            // 2. Status Rawat (Radio Button)
+            if (data.ruangRawat) {
+                let normalizedRoom = data.ruangRawat;
+                const roomLower = normalizedRoom.toLowerCase();
+                if (roomLower.includes('interne') || roomLower.includes('interna') || roomLower.includes('penyakit dalam') || roomLower.includes('ipd')) {
+                    normalizedRoom = "Rawat Inap Penyakit Dalam";
+                }
+                const radio = document.querySelector(`input[name="ruang-rawat"][value="${normalizedRoom}"]`);
+                if (radio) {
+                    radio.checked = true;
+                    applyRoomFormulaRules(normalizedRoom);
+                }
+            }
 
-    // 8. Kebiasaan Makan di Rumah
-    if (data.habits && Array.isArray(data.habits)) {
-        // Uncheck all first
-        document.querySelectorAll('.habit-item').forEach(el => el.checked = false);
-        // Check matching
-        data.habits.forEach(habitVal => {
-            const el = Array.from(document.querySelectorAll('.habit-item')).find(x => x.value.toLowerCase().includes(habitVal.toLowerCase()) || habitVal.toLowerCase().includes(x.value.toLowerCase()));
-            if (el) el.checked = true;
-        });
-    }
+            // 3. Antropometri
+            if (data.height) document.getElementById('height').value = data.height;
+            if (data.weight) document.getElementById('weight').value = data.weight;
 
-    // 9. Preskripsi Terapi Diet Terpilih
-    if (data.diets && Array.isArray(data.diets)) {
-        document.querySelectorAll('.diet-item').forEach(el => el.checked = false);
-        data.diets.forEach(dietVal => {
-            const el = Array.from(document.querySelectorAll('.diet-item')).find(x => x.value.toLowerCase().includes(dietVal.toLowerCase()) || dietVal.toLowerCase().includes(x.value.toLowerCase()));
-            if (el) el.checked = true;
-        });
-    }
+            // 4. Biokimia & Parameter Laboratorium
+            if (data.hb) document.getElementById('bio-hb').value = data.hb;
+            if (data.albumin) document.getElementById('bio-albumin').value = data.albumin;
+            if (data.gds) document.getElementById('bio-gds').value = data.gds;
+            if (data.leuko) document.getElementById('bio-leuko').value = data.leuko;
+            if (data.trombo) document.getElementById('bio-trombo').value = data.trombo;
+            if (data.eritrosit) document.getElementById('bio-eritrosit').value = data.eritrosit;
+            if (data.aurat) document.getElementById('bio-aurat').value = data.aurat;
+            if (data.koles) document.getElementById('bio-koles').value = data.koles;
+            if (data.kreatin) document.getElementById('bio-kreatin').value = data.kreatin;
 
-    // 10. Catatan Tambahan Riwayat Diet & Diagnosa Medis Utama
-    if (data.dietHistory) document.getElementById('diet-history').value = data.dietHistory;
-    
-    if (data.medDiagnosis) {
-        const select = document.getElementById('med-diagnosis');
-        const hasOption = Array.from(select.options).some(opt => opt.value === data.medDiagnosis);
-        if (hasOption) {
-            select.value = data.medDiagnosis;
+            // 5. Parameter Klinis
+            if (data.bp) document.getElementById('clin-bp').value = data.bp;
+            if (data.temp) document.getElementById('clin-temp').value = data.temp;
+            if (data.hr) document.getElementById('clin-hr').value = data.hr;
+            if (data.rr) document.getElementById('clin-rr').value = data.rr;
+
+            // 6. Gejala GI (Checkbox)
+            document.getElementById('gi-mual').checked = !!data.mual;
+            document.getElementById('gi-muntah').checked = !!data.muntah;
+            document.getElementById('gi-diare').checked = !!data.diare;
+            document.getElementById('gi-menelan').checked = !!data.menelan;
+
+            // 7. Skrining Riwayat Gizi (Checkbox)
+            document.getElementById('scr-nafsu-makan').checked = !!data.scrNafsuMakan;
+            document.getElementById('scr-asupan').checked = !!data.scrAsupan;
+            document.getElementById('scr-kunyah').checked = !!data.scrKunyah;
+            document.getElementById('scr-bb-turun').checked = !!data.scrBbTurun;
+
+            // 8. Kebiasaan Makan di Rumah
+            if (data.habits && Array.isArray(data.habits)) {
+                document.querySelectorAll('.habit-item').forEach(el => el.checked = false);
+                data.habits.forEach(habitVal => {
+                    const el = Array.from(document.querySelectorAll('.habit-item')).find(x => x.value.toLowerCase().includes(habitVal.toLowerCase()) || habitVal.toLowerCase().includes(x.value.toLowerCase()));
+                    if (el) el.checked = true;
+                });
+            }
+
+            // 9. Preskripsi Terapi Diet Terpilih
+            if (data.diets && Array.isArray(data.diets)) {
+                document.querySelectorAll('.diet-item').forEach(el => el.checked = false);
+                data.diets.forEach(dietVal => {
+                    const el = Array.from(document.querySelectorAll('.diet-item')).find(x => x.value.toLowerCase().includes(dietVal.toLowerCase()) || dietVal.toLowerCase().includes(x.value.toLowerCase()));
+                    if (el) el.checked = true;
+                });
+            }
+
+            // 10. Catatan Tambahan Riwayat Diet & Diagnosa Medis Utama
+            if (data.dietHistory) document.getElementById('diet-history').value = data.dietHistory;
+            
+            if (data.medDiagnosis) {
+                const select = document.getElementById('med-diagnosis');
+                const hasOption = Array.from(select.options).some(opt => opt.value === data.medDiagnosis);
+                if (hasOption) {
+                    select.value = data.medDiagnosis;
+                    document.getElementById('custom-med-diag-container').classList.add('hidden');
+                } else {
+                    select.value = "Lainnya";
+                    document.getElementById('custom-med-diag-container').classList.remove('hidden');
+                    document.getElementById('med-diagnosis-custom').value = data.medDiagnosis;
+                }
+            }
+
+            // 11. Narasi Diagnosa Gizi, Intervensi, dan Monev (Bila ada coretan khusus)
+            if (data.nutritionDiagnosis) {
+                document.getElementById('nutrition-diagnosis').value = data.nutritionDiagnosis;
+                isPesEdited = true;
+            }
+            if (data.nutritionIntervention) document.getElementById('nutrition-intervention').value = data.nutritionIntervention;
+            if (data.nutritionMonev) document.getElementById('nutrition-monev').value = data.nutritionMonev;
+
+            calculateNutrition();
+        }
+
+        function resetForm() {
+            isPesEdited = false;
+            document.getElementById('name').value = '';
+            document.getElementById('no-rm').value = '';
+            document.getElementById('address').value = '';
+            document.getElementById('dob').value = '';
+            document.getElementById('height').value = '';
+            document.getElementById('weight').value = '';
+            
+            document.getElementById('bio-hb').value = '';
+            document.getElementById('bio-albumin').value = '';
+            document.getElementById('bio-gds').value = '';
+            document.getElementById('bio-leuko').value = '';
+            document.getElementById('bio-trombo').value = '';
+            document.getElementById('bio-eritrosit').value = '';
+            document.getElementById('bio-aurat').value = '';
+            document.getElementById('bio-koles').value = '';
+            document.getElementById('bio-kreatin').value = '';
+
+            document.getElementById('clin-bp').value = '';
+            document.getElementById('clin-temp').value = '';
+            document.getElementById('clin-hr').value = '';
+            document.getElementById('clin-rr').value = '';
+            document.getElementById('diet-history').value = '';
+            document.getElementById('med-diagnosis').value = 'Diabetes Mellitus Tipe 2';
+            document.getElementById('med-diagnosis-custom').value = '';
             document.getElementById('custom-med-diag-container').classList.add('hidden');
-        } else {
-            select.value = "Lainnya";
-            document.getElementById('custom-med-diag-container').classList.remove('hidden');
-            document.getElementById('med-diagnosis-custom').value = data.medDiagnosis;
+            
+            document.getElementById('nutrition-diagnosis').value = '';
+            document.getElementById('nutrition-intervention').value = '';
+            document.getElementById('nutrition-monev').value = '';
+
+            document.getElementById('gi-mual').checked = false;
+            document.getElementById('gi-muntah').checked = false;
+            document.getElementById('gi-diare').checked = false;
+            document.getElementById('gi-menelan').checked = false;
+
+            document.getElementById('scr-nafsu-makan').checked = false;
+            document.getElementById('scr-asupan').checked = false;
+            document.getElementById('scr-kunyah').checked = false;
+            document.getElementById('scr-bb-turun').checked = false;
+
+            document.querySelectorAll('.diet-item').forEach(item => {
+                item.checked = false;
+            });
+
+            document.querySelectorAll('.habit-item').forEach(item => {
+                item.checked = false;
+            });
+
+            document.querySelector('input[name="ruang-rawat"][value="Rawat Inap Kebidanan"]').checked = true;
+            document.querySelector('input[name="kelas-rawat"][value="Kelas 3"]').checked = true;
+            
+            const defaultPasien = document.querySelector('input[name="jenis-pasien"][value="Umum"]');
+            if (defaultPasien) defaultPasien.checked = true;
+
+            document.getElementById('pct-protein').value = 15;
+            document.getElementById('pct-fat').value = 25;
+            document.getElementById('pct-carb').value = 60;
+            validatePercentages();
+
+            document.getElementById('calculated-age').textContent = '-';
+            
+            document.getElementById('out-name').textContent = '-';
+            document.getElementById('out-no-rm').textContent = '-';
+            document.getElementById('out-rawat-info').textContent = '-';
+            document.getElementById('out-jenis-pasien').textContent = '-';
+            document.getElementById('out-address').textContent = '-';
+            document.getElementById('out-age').textContent = '-';
+            document.getElementById('out-anthropometry').textContent = '-';
+            document.getElementById('out-bmi').textContent = '-';
+            document.getElementById('out-status-gizi').textContent = '-';
+            document.getElementById('out-med-diag').textContent = '-';
+            document.getElementById('out-diet-preskripsi').textContent = '-';
+            document.getElementById('out-bmr').textContent = '0 kcal';
+            document.getElementById('out-tee').innerHTML = '0 <span class="text-sm font-normal text-slate-500">kcal/hari</span>';
+            document.getElementById('out-protein').textContent = '0 g';
+            document.getElementById('out-protein-kcal').textContent = '0 kcal';
+            document.getElementById('out-fat').textContent = '0 g';
+            document.getElementById('out-fat-kcal').textContent = '0 kcal';
+            document.getElementById('out-carb').textContent = '0 g';
+            document.getElementById('out-carb-kcal').textContent = '0 kcal';
+            
+            document.getElementById('out-bp').textContent = '-';
+            document.getElementById('out-temp').textContent = '-';
+            document.getElementById('out-hb').textContent = '-';
+            document.getElementById('out-albumin').textContent = '-';
+            document.getElementById('out-gds').textContent = '-';
+            document.getElementById('out-leuko').textContent = '-';
+            document.getElementById('out-trombo').textContent = '-';
+            document.getElementById('out-eritrosit').textContent = '-';
+            document.getElementById('out-aurat').textContent = '-';
+            document.getElementById('out-koles').textContent = '-';
+            document.getElementById('out-kreatin').textContent = '-';
+            document.getElementById('out-pes').textContent = 'Belum dihitung.';
+            document.getElementById('out-intervensi').textContent = '-';
+            document.getElementById('out-monev').textContent = '-';
+            
+            const btnSave = document.getElementById('btn-save-sheets');
+            btnSave.disabled = true;
+            btnSave.className = "flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl shadow-md transition-all opacity-50 cursor-not-allowed text-sm";
+            btnSave.textContent = 'Simpan & Unduh Laporan';
+            
+            const syncStatus = document.getElementById('sync-status');
+            syncStatus.textContent = 'Belum Disimpan';
+            syncStatus.className = 'text-[10px] bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full font-bold uppercase no-print';
+
+            globalCalculatedData = null;
         }
-    }
-
-    // 11. Narasi Diagnosa Gizi, Intervensi, dan Monev (Bila ada coretan khusus)
-    if (data.nutritionDiagnosis) {
-        document.getElementById('nutrition-diagnosis').value = data.nutritionDiagnosis;
-        isPesEdited = true; // Tandai agar draft auto-generasi tidak menimpa hasil ekstraksi kertas
-    }
-    if (data.nutritionIntervention) document.getElementById('nutrition-intervention').value = data.nutritionIntervention;
-    if (data.nutritionMonev) document.getElementById('nutrition-monev').value = data.nutritionMonev;
-
-    // Trigger kalkulasi internal agar seluruh angka kalkulator tersinkronisasi
-    calculateNutrition();
-}
-
         function resetForm() {
             isPesEdited = false; // Reset status pelacak edit manual PES
             document.getElementById('name').value = '';
