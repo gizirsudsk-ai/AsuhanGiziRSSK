@@ -607,7 +607,7 @@
         // =========================================================================
         // PENGATURAN TAUTAN GOOGLE SPREADSHEETS (BAKU)
         // =========================================================================
-        const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzX3s28x1Lp6D3OnxscjQFlwi9_RuW9mmZDvM4kej5_XlPNFTdrJ58DWni8AmH5numyHA/exec";
+        const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw4XHi_BXxCiluqU5F4bpo7DIhZGkwV-fcUnR0OqW8YXRpY-hXpeTKIVnMoJvF92EiuOA/exec";
         // =========================================================================
 
         // Referensi Antropometri Anak WHO / Permenkes No. 2 Tahun 2020 (Diperluas dari 2 - 18 Tahun)
@@ -1369,32 +1369,82 @@ ${data.monev}
         // =========================================================================
         // KODE JAVASCRIPT INTEGRASI OCR / SCAN MULTI-HALAMAN
         // =========================================================================
-        function processOcrImage(input) {
-            const files = input.files;
-            if (!files || files.length === 0) return;
+        // =========================================================================
+// KODE JAVASCRIPT INTEGRASI OCR / SCAN MULTI-HALAMAN (DENGAN KOMPRESI)
+// =========================================================================
+function processOcrImage(input) {
+    const files = input.files;
+    if (!files || files.length === 0) return;
 
-            const label = document.getElementById('upload-label');
-            const loader = document.getElementById('ocr-loader');
-            
-            label.textContent = `Membaca ${files.length} Berkas...`;
-            loader.classList.remove('hidden');
+    const label = document.getElementById('upload-label');
+    const loader = document.getElementById('ocr-loader');
+    
+    label.textContent = `Mengompresi & Membaca ${files.length} Berkas...`;
+    loader.classList.remove('hidden');
 
-            const promises = [];
-            for (let i = 0; i < files.length; i++) {
-                promises.push(fileToBase64(files[i]));
-            }
+    // Kompresi resolusi gambar ke max 1280px & kualitas 70% di browser pasien/petugas
+    const promises = [];
+    for (let i = 0; i < files.length; i++) {
+        promises.push(compressAndConvertToBase64(files[i], 1280, 1280, 0.7)); 
+    }
 
-            Promise.all(promises)
-                .then(base64Array => {
-                    sendImagesToAppsScript(base64Array);
-                })
-                .catch(err => {
-                    alert("Gagal membaca berkas gambar: " + err.message);
-                    label.textContent = "📂 Pilih / Ambil Foto Catatan";
-                    loader.classList.add('hidden');
-                });
-        }
+    Promise.all(promises)
+        .then(base64Array => {
+            label.textContent = `Menganalisis dengan Gemini AI...`;
+            sendImagesToAppsScript(base64Array);
+        })
+        .catch(err => {
+            alert("Gagal memproses berkas gambar: " + err.message);
+            label.textContent = "📂 Pilih / Ambil Foto Catatan";
+            loader.classList.add('hidden');
+        });
+}
 
+// Fungsi Kompresi Foto Menggunakan Canvas Browser (Menghemat Token & Mencegah Rate Limit)
+function compressAndConvertToBase64(file, maxWidth, maxHeight, quality) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = function (event) {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = function () {
+                let width = img.width;
+                let height = img.height;
+
+                // Menyesuaikan rasio dimensi gambar
+                if (width > height) {
+                    if (width > maxWidth) {
+                        height = Math.round((height * maxWidth) / width);
+                        width = maxWidth;
+                    }
+                } else {
+                    if (height > maxHeight) {
+                        width = Math.round((width * maxHeight) / height);
+                        height = maxHeight;
+                    }
+                }
+
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                // Menghasilkan data Base64 ukuran ringan (~150KB - 250KB per lembar)
+                const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
+                resolve(compressedBase64);
+            };
+            img.onerror = function (err) {
+                reject(err);
+            };
+        };
+        reader.onerror = function (err) {
+            reject(err);
+        };
+    });
+}
         function fileToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
