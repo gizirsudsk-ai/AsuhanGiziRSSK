@@ -607,7 +607,7 @@
         // =========================================================================
         // PENGATURAN TAUTAN GOOGLE SPREADSHEETS (BAKU)
         // =========================================================================
-        const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbw4XHi_BXxCiluqU5F4bpo7DIhZGkwV-fcUnR0OqW8YXRpY-hXpeTKIVnMoJvF92EiuOA/exec";
+        const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxXJAuVyvH5gOEvLUkdyBwdX2BxlQKI8XC73Qcy7fo1ORb2hVcqV8pCIPq27GiY4W-mfA/exec";
         // =========================================================================
 
         // Referensi Antropometri Anak WHO / Permenkes No. 2 Tahun 2020 (Diperluas dari 2 - 18 Tahun)
@@ -1401,7 +1401,7 @@ function processOcrImage(input) {
 }
 
 // Fungsi Kompresi Foto Menggunakan Canvas Browser (Menghemat Token & Mencegah Rate Limit)
-function compressAndConvertToBase64(file, maxWidth, maxHeight, quality) {
+function compressAndConvertToBase64(file, maxWidth = 1600, maxHeight = 1600, quality = 0.85) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -1412,7 +1412,6 @@ function compressAndConvertToBase64(file, maxWidth, maxHeight, quality) {
                 let width = img.width;
                 let height = img.height;
 
-                // Menyesuaikan rasio dimensi gambar
                 if (width > height) {
                     if (width > maxWidth) {
                         height = Math.round((height * maxWidth) / width);
@@ -1432,19 +1431,15 @@ function compressAndConvertToBase64(file, maxWidth, maxHeight, quality) {
                 const ctx = canvas.getContext('2d');
                 ctx.drawImage(img, 0, 0, width, height);
 
-                // Menghasilkan data Base64 ukuran ringan (~150KB - 250KB per lembar)
                 const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
                 resolve(compressedBase64);
             };
-            img.onerror = function (err) {
-                reject(err);
-            };
+            img.onerror = err => reject(err);
         };
-        reader.onerror = function (err) {
-            reject(err);
-        };
+        reader.onerror = err => reject(err);
     });
 }
+
         function fileToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
@@ -1524,34 +1519,67 @@ function formatToISODate(dateStr) {
 
 function populateFormWithOcrData(data) {
     if (!data) return;
-
-    // 1. Identitas
-    if (data.name) document.getElementById('name').value = data.name;
-    if (data.noRm) document.getElementById('no-rm').value = data.noRm;
-    if (data.gender) document.getElementById('gender').value = data.gender;
     
-    // Normalisasi Otomatis Format Tanggal Lahir & Pemeriksaan
-    if (data.dob) {
-        const isoDob = formatToISODate(data.dob);
+    // Tampilkan data hasil scan di Console Browser (Tekan F12 untuk inspect)
+    console.log("=== DATA HASIL OCR GEMINI AI ===", data);
+
+    // Helper Pembaca Fleksibel (Mencegah Form Kosong Jika AI Mengubah Nama Kunci)
+    const getVal = (...keys) => {
+        for (let k of keys) {
+            if (data[k] !== undefined && data[k] !== null && data[k] !== '' && data[k] !== '-') {
+                return data[k];
+            }
+        }
+        return null;
+    };
+
+    // 1. Identitas Pasien
+    const nameVal = getVal('name', 'nama', 'nama_pasien', 'namaPasien');
+    if (nameVal) document.getElementById('name').value = nameVal;
+
+    const noRmVal = getVal('noRm', 'no_rm', 'norm', 'rm', 'noRekamMedis');
+    if (noRmVal) document.getElementById('no-rm').value = noRmVal;
+
+    const genderVal = getVal('gender', 'jenis_kelamin', 'jenisKelamin');
+    if (genderVal) {
+        const gLower = String(genderVal).toLowerCase();
+        if (gLower.includes('l') || gLower.includes('male') || gLower.includes('pria')) {
+            document.getElementById('gender').value = 'male';
+        } else if (gLower.includes('p') || gLower.includes('female') || gLower.includes('wanita')) {
+            document.getElementById('gender').value = 'female';
+        }
+    }
+
+    const dobVal = getVal('dob', 'tanggal_lahir', 'tglLahir', 'tanggalLahir');
+    if (dobVal) {
+        const isoDob = formatToISODate(dobVal);
         if (isoDob) {
             document.getElementById('dob').value = isoDob;
             calculateAge();
         }
     }
-    if (data.examDate) {
-        const isoExam = formatToISODate(data.examDate);
+
+    const examDateVal = getVal('examDate', 'tanggal_masuk', 'tglMasuk', 'tanggalPemeriksaan');
+    if (examDateVal) {
+        const isoExam = formatToISODate(examDateVal);
         if (isoExam) document.getElementById('exam-date').value = isoExam;
     }
-    
-    if (data.address) document.getElementById('address').value = data.address;
 
-    // 2. Status Rawat (Radio Button)
-    if (data.ruangRawat) {
-        let normalizedRoom = data.ruangRawat;
-        const roomLower = normalizedRoom.toLowerCase();
-        if (roomLower.includes('interne') || roomLower.includes('interna') || roomLower.includes('penyakit dalam') || roomLower.includes('ipd')) {
-            normalizedRoom = "Rawat Inap Penyakit Dalam";
-        }
+    const addressVal = getVal('address', 'alamat');
+    if (addressVal) document.getElementById('address').value = addressVal;
+
+    // 2. Status Rawat
+    const roomVal = getVal('ruangRawat', 'ruang_rawat', 'ruangan', 'unit');
+    if (roomVal) {
+        let normalizedRoom = roomVal;
+        const roomLower = String(normalizedRoom).toLowerCase();
+        if (roomLower.includes('kebidanan') || roomLower.includes('obs')) normalizedRoom = "Rawat Inap Kebidanan";
+        else if (roomLower.includes('hcu') || roomLower.includes('icu')) normalizedRoom = "HCU";
+        else if (roomLower.includes('anak') || roomLower.includes('pediatri')) normalizedRoom = "Rawat Inap Anak";
+        else if (roomLower.includes('interne') || roomLower.includes('penyakit dalam') || roomLower.includes('ipd')) normalizedRoom = "Rawat Inap Penyakit Dalam";
+        else if (roomLower.includes('bedah')) normalizedRoom = "Rawat Inap Bedah";
+        else if (roomLower.includes('jalan') || roomLower.includes('poli')) normalizedRoom = "Rawat Jalan";
+
         const radio = document.querySelector(`input[name="ruang-rawat"][value="${normalizedRoom}"]`);
         if (radio) {
             radio.checked = true;
@@ -1560,89 +1588,99 @@ function populateFormWithOcrData(data) {
     }
 
     // 3. Antropometri
-    if (data.height) document.getElementById('height').value = data.height;
-    if (data.weight) document.getElementById('weight').value = data.weight;
+    const heightVal = getVal('height', 'tb', 'tinggi', 'tinggi_badan', 'tinggiBadan');
+    if (heightVal) document.getElementById('height').value = parseFloat(heightVal);
 
-    // 4. Biokimia & Parameter Laboratorium
-    if (data.hb) document.getElementById('bio-hb').value = data.hb;
-    if (data.albumin) document.getElementById('bio-albumin').value = data.albumin;
-    if (data.gds) document.getElementById('bio-gds').value = data.gds;
-    if (data.leuko) document.getElementById('bio-leuko').value = data.leuko;
-    if (data.trombo) document.getElementById('bio-trombo').value = data.trombo;
-    if (data.eritrosit) document.getElementById('bio-eritrosit').value = data.eritrosit;
-    if (data.aurat) document.getElementById('bio-aurat').value = data.aurat;
-    if (data.koles) document.getElementById('bio-koles').value = data.koles;
-    if (data.kreatin) document.getElementById('bio-kreatin').value = data.kreatin;
+    const weightVal = getVal('weight', 'bb', 'berat', 'berat_badan', 'beratBadan');
+    if (weightVal) document.getElementById('weight').value = parseFloat(weightVal);
 
-    // 5. Parameter Klinis
-    if (data.bp) document.getElementById('clin-bp').value = data.bp;
-    if (data.temp) document.getElementById('clin-temp').value = data.temp;
-    if (data.hr) document.getElementById('clin-hr').value = data.hr;
-    if (data.rr) document.getElementById('clin-rr').value = data.rr;
+    // 4. Laboratorium & Biokimia
+    if (getVal('hb')) document.getElementById('bio-hb').value = parseFloat(getVal('hb'));
+    if (getVal('albumin')) document.getElementById('bio-albumin').value = parseFloat(getVal('albumin'));
+    if (getVal('gds')) document.getElementById('bio-gds').value = parseFloat(getVal('gds'));
+    if (getVal('leuko', 'leukosit')) document.getElementById('bio-leuko').value = parseFloat(getVal('leuko', 'leukosit'));
+    if (getVal('trombo', 'trombosit')) document.getElementById('bio-trombo').value = parseFloat(getVal('trombo', 'trombosit'));
+    if (getVal('eritrosit')) document.getElementById('bio-eritrosit').value = parseFloat(getVal('eritrosit'));
+    if (getVal('aurat', 'asamUrat')) document.getElementById('bio-aurat').value = parseFloat(getVal('aurat', 'asamUrat'));
+    if (getVal('koles', 'kolesterol')) document.getElementById('bio-koles').value = parseFloat(getVal('koles', 'kolesterol'));
+    if (getVal('kreatin', 'kreatinin')) document.getElementById('bio-kreatin').value = parseFloat(getVal('kreatin', 'kreatinin'));
 
-    // 6. Gejala GI (Checkbox)
-    document.getElementById('gi-mual').checked = !!data.mual;
-    document.getElementById('gi-muntah').checked = !!data.muntah;
-    document.getElementById('gi-diare').checked = !!data.diare;
-    document.getElementById('gi-menelan').checked = !!data.menelan;
+    // 5. Klinis
+    if (getVal('bp', 'tensi', 'td')) document.getElementById('clin-bp').value = getVal('bp', 'tensi', 'td');
+    if (getVal('temp', 'suhu')) document.getElementById('clin-temp').value = parseFloat(getVal('temp', 'suhu'));
+    if (getVal('hr', 'nadi')) document.getElementById('clin-hr').value = parseFloat(getVal('hr', 'nadi'));
+    if (getVal('rr', 'napas')) document.getElementById('clin-rr').value = parseFloat(getVal('rr', 'napas'));
 
-    // 7. Skrining Riwayat Gizi (Checkbox)
-    document.getElementById('scr-nafsu-makan').checked = !!data.scrNafsuMakan;
-    document.getElementById('scr-asupan').checked = !!data.scrAsupan;
-    document.getElementById('scr-kunyah').checked = !!data.scrKunyah;
-    document.getElementById('scr-bb-turun').checked = !!data.scrBbTurun;
+    // 6. Gejala GI
+    document.getElementById('gi-mual').checked = !!getVal('mual');
+    document.getElementById('gi-muntah').checked = !!getVal('muntah');
+    document.getElementById('gi-diare').checked = !!getVal('diare');
+    document.getElementById('gi-menelan').checked = !!getVal('menelan', 'sulitMenelan');
 
-    // 8. Kebiasaan Makan di Rumah
-    if (data.habits && Array.isArray(data.habits)) {
+    // 7. Skrining Gizi
+    document.getElementById('scr-nafsu-makan').checked = !!getVal('scrNafsuMakan', 'nafsuMakan');
+    document.getElementById('scr-asupan').checked = !!getVal('scrAsupan', 'asupanBerkurang');
+    document.getElementById('scr-kunyah').checked = !!getVal('scrKunyah', 'gangguanKunyah');
+    document.getElementById('scr-bb-turun').checked = !!getVal('scrBbTurun', 'bbTurun');
+
+    // 8. Riwayat & Preskripsi Diet
+    const habitsVal = getVal('habits', 'kebiasaan');
+    if (habitsVal && Array.isArray(habitsVal)) {
         document.querySelectorAll('.habit-item').forEach(el => el.checked = false);
-        data.habits.forEach(habitVal => {
-            const el = Array.from(document.querySelectorAll('.habit-item')).find(x => x.value.toLowerCase().includes(habitVal.toLowerCase()) || habitVal.toLowerCase().includes(x.value.toLowerCase()));
+        habitsVal.forEach(h => {
+            const el = Array.from(document.querySelectorAll('.habit-item')).find(x => x.value.toLowerCase().includes(String(h).toLowerCase()));
             if (el) el.checked = true;
         });
     }
 
-    // 9. Preskripsi Terapi Diet Terpilih
-    if (data.diets && Array.isArray(data.diets)) {
+    const dietsVal = getVal('diets', 'rencanaDiet', 'preskripsiDiet');
+    if (dietsVal && Array.isArray(dietsVal)) {
         document.querySelectorAll('.diet-item').forEach(el => el.checked = false);
-        data.diets.forEach(dietVal => {
-            const el = Array.from(document.querySelectorAll('.diet-item')).find(x => x.value.toLowerCase().includes(dietVal.toLowerCase()) || dietVal.toLowerCase().includes(x.value.toLowerCase()));
+        dietsVal.forEach(d => {
+            const el = Array.from(document.querySelectorAll('.diet-item')).find(x => x.value.toLowerCase().includes(String(d).toLowerCase()));
             if (el) el.checked = true;
         });
     }
 
-    // 10. Catatan Tambahan Riwayat Diet & Diagnosa Medis Utama
-    if (data.dietHistory) document.getElementById('diet-history').value = data.dietHistory;
-    
-    if (data.medDiagnosis) {
+    const dietHistoryVal = getVal('dietHistory', 'riwayatDiet', 'catatanDiet');
+    if (dietHistoryVal) document.getElementById('diet-history').value = dietHistoryVal;
+
+    // 9. Diagnosa Medis & Narasi Gizi
+    const medDiagVal = getVal('medDiagnosis', 'diagnosaMedis', 'diagnosisMedis');
+    if (medDiagVal) {
         const select = document.getElementById('med-diagnosis');
-        const hasOption = Array.from(select.options).some(opt => opt.value === data.medDiagnosis);
+        const hasOption = Array.from(select.options).some(opt => opt.value === medDiagVal);
         if (hasOption) {
-            select.value = data.medDiagnosis;
+            select.value = medDiagVal;
             document.getElementById('custom-med-diag-container').classList.add('hidden');
         } else {
             select.value = "Lainnya";
             document.getElementById('custom-med-diag-container').classList.remove('hidden');
-            document.getElementById('med-diagnosis-custom').value = data.medDiagnosis;
+            document.getElementById('med-diagnosis-custom').value = medDiagVal;
         }
     }
 
-    // 11. Narasi Diagnosa Gizi, Intervensi, dan Monev
-    if (data.nutritionDiagnosis) {
-        document.getElementById('nutrition-diagnosis').value = data.nutritionDiagnosis;
+    const pesVal = getVal('nutritionDiagnosis', 'diagnosaGizi', 'pes');
+    if (pesVal) {
+        document.getElementById('nutrition-diagnosis').value = pesVal;
         isPesEdited = true;
     }
-    if (data.nutritionIntervention) document.getElementById('nutrition-intervention').value = data.nutritionIntervention;
-    if (data.nutritionMonev) document.getElementById('nutrition-monev').value = data.nutritionMonev;
 
-    // --- PERBAIKAN: Hanya kalkulasi jika variabel utama (Tanggal Lahir, TB, BB) benar-benar terisi ---
-    const dobVal = document.getElementById('dob').value;
-    const heightVal = document.getElementById('height').value;
-    const weightVal = document.getElementById('weight').value;
+    const intervVal = getVal('nutritionIntervention', 'intervensiGizi', 'intervensi');
+    if (intervVal) document.getElementById('nutrition-intervention').value = intervVal;
 
-    if (dobVal && heightVal && weightVal) {
+    const monevVal = getVal('nutritionMonev', 'monitoringEvaluasi', 'monev');
+    if (monevVal) document.getElementById('nutrition-monev').value = monevVal;
+
+    // Eksekusi kalkulasi jika data utama tersedia
+    const dobCheck = document.getElementById('dob').value;
+    const hCheck = document.getElementById('height').value;
+    const wCheck = document.getElementById('weight').value;
+
+    if (dobCheck && hCheck && wCheck) {
         calculateNutrition();
     } else {
-        alert("Scan foto selesai! Sebagian data otomatis terisi. Silakan lengkapi Tanggal Lahir / TB / BB yang belum terisi sebelum menekan tombol Hitung.");
+        alert("Pindaian berhasil! Data terbaca dan diisikan ke dalam form. Silakan periksa kembali dan lengkapi kolom yang belum terisi sebelum menekan Hitung.");
     }
 }
         function resetForm() {
