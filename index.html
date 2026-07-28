@@ -191,6 +191,14 @@
                             <input type="number" id="weight" placeholder="kg" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm">
                         </div>
                     </div>
+                    <!-- Opsi Pilihan Basis BB untuk Perhitungan BMR -->
+                        <div class="mt-3">
+                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Basis Berat Badan untuk BMR</label>
+                            <select id="weight-base" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-teal-500 bg-teal-50/50">
+                                <option value="bba" selected>Berat Badan Aktual (BBA) - Standar Pasien Normal/Kurus</option>
+                                <option value="bbi">Berat Badan Ideal (BBI) - Direkomendasikan Pasien Obesitas/Overweight</option>
+                        </select>
+                    </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         <div>
@@ -350,8 +358,64 @@
                         </div>
                     </div>
 
-                    <!-- Menu Diet (Checklist Toggles) -->
-                    <div class="mb-4 p-4 bg-slate-50 border rounded-lg border-slate-200">
+                <!-- 6. Diagnosa Medis, Diagnosa Gizi, Intervensi & Monev -->
+                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
+                    <h2 class="text-lg font-semibold text-teal-800 border-b pb-2 mb-4">6. Diagnosa, Rencana Intervensi & Monitoring</h2>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Diagnosa Medis Utama</label>
+                            <select id="med-diagnosis" onchange="toggleCustomMedDiag()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none">
+                                <optgroup label="Penyakit Dalam (Internal Medicine)">
+                                    <option value="Diabetes Mellitus Tipe 2">Diabetes Mellitus Tipe 2</option>
+                                    <option value="Hipertensi Esensial">Hipertensi Esensial</option>
+                                    <option value="Gagal Ginjal Kronis (CKD)">Gagal Ginjal Kronis (CKD)</option>
+                                    <option value="Sirosis Hepatis">Sirosis Hepatis</option>
+                                    <option value="Dyslipidemia">Dyslipidemia</option>
+                                </optgroup>
+                                <optgroup label="Anak (Pediatrics)">
+                                    <option value="Malnutrisi Energi Protein (MEP)">Malnutrisi Energi Protein (MEP)</option>
+                                    <option value="Diare Akut Dehidrasi Sedang/Berat">Diare Akut Dehidrasi Sedang/Berat</option>
+                                    <option value="Dengue Hemorrhagic Fever (DHF)">Dengue Hemorrhagic Fever (DHF)</option>
+                                    <option value="Bronkopneumonia">Bronkopneumonia</option>
+                                </optgroup>
+                                <optgroup label="Bedah (Surgery)">
+                                    <option value="Apendisitis Akut (Post-Op)">Apendisitis Akut (Post-Op)</option>
+                                    <option value="Fraktur Femur (Pre/Post-Op)">Fraktur Femur (Pre/Post-Op)</option>
+                                    <option value="Ileus Obstruktif">Ileus Obstruktif</option>
+                                    <option value="Hernia Inguinalis">Hernia Inguinalis</option>
+                                </optgroup>
+                                <optgroup label="HCU (High Care Unit)">
+                                    <option value="Stroke Non-Hemoragik (Disfagia)">Stroke Non-Hemoragik (Disfagia)</option>
+                                    <option value="Sepsis">Sepsis</option>
+                                    <option value="Gagal Jantung Kongestif (CHF)">Gagal Jantung Kongestif (CHF)</option>
+                                    <option value="Gagal Napas Tipe 1/2">Gagal Napas Tipe 1/2</option>
+                                </optgroup>
+                                <optgroup label="Kebidanan (Obstetrics & Gynecology)">
+                                    <option value="Pre-eklampsia / Eklampsia">Pre-eklampsia / Eklampsia</option>
+                                    <option value="Hyperemesis Gravidarum">Hyperemesis Gravidarum</option>
+                                    <option value="Anemia pada Kehamilan">Anemia pada Kehamilan</option>
+                                    <option value="Post-Sectio Caesarea (Post-SC)">Post-Sectio Caesarea (Post-SC)</option>
+                                </optgroup>
+                                <option value="Lainnya">Lainnya (Tulis Manual)</option>
+                            </select>
+                        </div>
+                        
+                        <div id="custom-med-diag-container" class="hidden">
+                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Tulis Diagnosa Medis Kustom</label>
+                            <input type="text" id="med-diagnosis-custom" placeholder="Tulis diagnosa penyakit di sini..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="block text-xs font-semibold text-slate-600 uppercase">Penentuan Diagnosis Gizi (PES)</label>
+                                <span class="text-[10px] text-teal-600 font-semibold italic">*Dapat diedit bebas setelah digenerate otomatis</span>
+                            </div>
+                            <textarea id="nutrition-diagnosis" rows="5" placeholder="Problem (P): ...&#10;Etiology (E): ...&#10;Signs/Symptoms (S): ..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs leading-relaxed"></textarea>
+                        </div>
+
+                        <!-- Intervensi Gizi & Monev Manual -->
+                        <!-- Menu Diet (Checklist Toggles) -->
+                        <div class="mb-4 p-4 bg-slate-50 border rounded-lg border-slate-200">
                         <h3 class="text-xs font-bold text-slate-700 uppercase mb-3">Pilihan Preskripsi Terapi Diet</h3>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
                             <label class="flex items-center space-x-2"><input type="checkbox" class="diet-item" value="Diet Makanan Biasa"> <span>Diet Makanan Biasa</span></label>
@@ -409,63 +473,39 @@
                         <p id="pct-warning" class="text-[11px] text-red-500 mt-1 hidden font-medium">⚠️ Total persentase harus tepat 100%!</p>
                     </div>
                 </div>
-
-                <!-- 6. Diagnosa Medis, Diagnosa Gizi, Intervensi & Monev -->
-                <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200">
-                    <h2 class="text-lg font-semibold text-teal-800 border-b pb-2 mb-4">6. Diagnosa, Rencana Intervensi & Monitoring</h2>
-                    <div class="space-y-4">
+                        <div class="mt-4 p-4 bg-teal-50/40 border border-teal-100 rounded-lg space-y-4">
+                        <!-- Bentuk Makanan -->
                         <div>
-                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Diagnosa Medis Utama</label>
-                            <select id="med-diagnosis" onchange="toggleCustomMedDiag()" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none">
-                                <optgroup label="Penyakit Dalam (Internal Medicine)">
-                                    <option value="Diabetes Mellitus Tipe 2">Diabetes Mellitus Tipe 2</option>
-                                    <option value="Hipertensi Esensial">Hipertensi Esensial</option>
-                                    <option value="Gagal Ginjal Kronis (CKD)">Gagal Ginjal Kronis (CKD)</option>
-                                    <option value="Sirosis Hepatis">Sirosis Hepatis</option>
-                                    <option value="Dyslipidemia">Dyslipidemia</option>
-                                </optgroup>
-                                <optgroup label="Anak (Pediatrics)">
-                                    <option value="Malnutrisi Energi Protein (MEP)">Malnutrisi Energi Protein (MEP)</option>
-                                    <option value="Diare Akut Dehidrasi Sedang/Berat">Diare Akut Dehidrasi Sedang/Berat</option>
-                                    <option value="Dengue Hemorrhagic Fever (DHF)">Dengue Hemorrhagic Fever (DHF)</option>
-                                    <option value="Bronkopneumonia">Bronkopneumonia</option>
-                                </optgroup>
-                                <optgroup label="Bedah (Surgery)">
-                                    <option value="Apendisitis Akut (Post-Op)">Apendisitis Akut (Post-Op)</option>
-                                    <option value="Fraktur Femur (Pre/Post-Op)">Fraktur Femur (Pre/Post-Op)</option>
-                                    <option value="Ileus Obstruktif">Ileus Obstruktif</option>
-                                    <option value="Hernia Inguinalis">Hernia Inguinalis</option>
-                                </optgroup>
-                                <optgroup label="HCU (High Care Unit)">
-                                    <option value="Stroke Non-Hemoragik (Disfagia)">Stroke Non-Hemoragik (Disfagia)</option>
-                                    <option value="Sepsis">Sepsis</option>
-                                    <option value="Gagal Jantung Kongestif (CHF)">Gagal Jantung Kongestif (CHF)</option>
-                                    <option value="Gagal Napas Tipe 1/2">Gagal Napas Tipe 1/2</option>
-                                </optgroup>
-                                <optgroup label="Kebidanan (Obstetrics & Gynecology)">
-                                    <option value="Pre-eklampsia / Eklampsia">Pre-eklampsia / Eklampsia</option>
-                                    <option value="Hyperemesis Gravidarum">Hyperemesis Gravidarum</option>
-                                    <option value="Anemia pada Kehamilan">Anemia pada Kehamilan</option>
-                                    <option value="Post-Sectio Caesarea (Post-SC)">Post-Sectio Caesarea (Post-SC)</option>
-                                </optgroup>
-                                <option value="Lainnya">Lainnya (Tulis Manual)</option>
-                            </select>
+                        <label class="block text-xs font-bold text-teal-900 uppercase mb-2">Bentuk Makanan</label>
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
+                            <label class="flex items-center space-x-2 cursor-pointer bg-white p-2.5 rounded-lg border border-slate-200 hover:border-teal-400">
+                                <input type="radio" name="bentuk-makanan" value="Biasa" class="text-teal-600 focus:ring-teal-500" checked>
+                                <span class="font-semibold text-slate-700">Makanan Biasa</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer bg-white p-2.5 rounded-lg border border-slate-200 hover:border-teal-400">
+                                <input type="radio" name="bentuk-makanan" value="Lunak / Bubur" class="text-teal-600 focus:ring-teal-500">
+                                <span class="font-semibold text-slate-700">Lunak / Bubur</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer bg-white p-2.5 rounded-lg border border-slate-200 hover:border-teal-400">
+                                <input type="radio" name="bentuk-makanan" value="Saring" class="text-teal-600 focus:ring-teal-500">
+                                <span class="font-semibold text-slate-700">Makanan Saring</span>
+                            </label>
+                            <label class="flex items-center space-x-2 cursor-pointer bg-white p-2.5 rounded-lg border border-slate-200 hover:border-teal-400">
+                                <input type="radio" name="bentuk-makanan" value="Cair" class="text-teal-600 focus:ring-teal-500">
+                                <span class="font-semibold text-slate-700">Makanan Cair</span>
+                            </label>
                         </div>
-                        
-                        <div id="custom-med-diag-container" class="hidden">
-                            <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Tulis Diagnosa Medis Kustom</label>
-                            <input type="text" id="med-diagnosis-custom" placeholder="Tulis diagnosa penyakit di sini..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                    </div>
+                
+                    <!-- Tujuan Diet (Auto-linked) -->
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-xs font-bold text-teal-900 uppercase">Tujuan Diet (Otomatis & Dapat Diedit)</label>
+                            <button type="button" onclick="generateTujuanDiet()" class="text-[10px] text-teal-700 font-semibold hover:underline">🔄 Reset Tujuan</button>
                         </div>
-
-                        <div>
-                            <div class="flex justify-between items-center mb-1">
-                                <label class="block text-xs font-semibold text-slate-600 uppercase">Penentuan Diagnosis Gizi (PES)</label>
-                                <span class="text-[10px] text-teal-600 font-semibold italic">*Dapat diedit bebas setelah digenerate otomatis</span>
-                            </div>
-                            <textarea id="nutrition-diagnosis" rows="5" placeholder="Problem (P): ...&#10;Etiology (E): ...&#10;Signs/Symptoms (S): ..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs leading-relaxed"></textarea>
-                        </div>
-
-                        <!-- Intervensi Gizi & Monev Manual -->
+                        <textarea id="tujuan-diet" rows="3" placeholder="Tujuan diet akan terisi otomatis berdasarkan preskripsi diet terpilih..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs leading-relaxed focus:ring-2 focus:ring-teal-500"></textarea>
+                    </div>
+                </div>
                         <div>
                             <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Rencana Intervensi Gizi (Manual)</label>
                             <textarea id="nutrition-intervention" rows="3" placeholder="Tulis target, estimasi bentuk makanan, jalur enteral/parenteral, atau konseling gizi..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-xs leading-relaxed"></textarea>
@@ -477,7 +517,7 @@
                         </div>
                     </div>
                 </div>
-
+                
                 <div class="flex flex-col md:flex-row gap-4">
                     <button onclick="calculateNutrition()" class="flex-1 bg-teal-600 hover:bg-teal-700 text-white font-semibold py-3 px-6 rounded-xl shadow-md transition-all text-sm">
                         Hitung & Analisis Gizi
@@ -559,7 +599,14 @@
                         <h3 class="font-bold text-slate-700 mb-1 uppercase tracking-wide">Diet Pasien Terpilih:</h3>
                         <p id="out-diet-preskripsi" class="text-sm font-semibold text-teal-800 italic">-</p>
                     </div>
-
+                    <!-- Tampilan Bentuk Makanan & Tujuan Diet di Card Hasil -->
+                    <div class="mb-4 space-y-2 text-xs border-t pt-3">
+                        <p><strong class="inline-block w-28 text-slate-500">Bentuk Makanan:</strong> <span id="out-bentuk-makanan" class="font-semibold text-teal-800">-</span></p>
+                        <div>
+                            <strong class="block text-slate-600 uppercase text-[10px] mb-1">Tujuan Diet Terpasang:</strong>
+                            <p id="out-tujuan-diet" class="text-xs text-slate-700 bg-teal-50/50 p-2.5 rounded border border-teal-100 whitespace-pre-wrap italic leading-relaxed">-</p>
+                        </div>
+                    </div>
                     <!-- Status Klinis & Laboratorium -->
                     <div class="mb-6 space-y-1.5 text-xs border-t pt-4">
                         <h3 class="font-bold text-slate-700 mb-2 uppercase tracking-wide">Data Klinis & Laboratorium:</h3>
@@ -608,7 +655,7 @@
         // =========================================================================
         // PENGATURAN TAUTAN GOOGLE SPREADSHEETS (BAKU)
         // =========================================================================
-        const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxPw5D7pCKRbXjwDbzTSjMRbCO5g1gi0FpebPAisim2KR9tAVP70KnF3JvJWTKlUj_k0w/exec";
+        const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxe_mno-xs8EN5eEaIoZbQa9Jq6ekda5CUtmDeTpX9779aDLaWr4ZATIrLLWY_FiOfylw/exec";
         // =========================================================================
 
         // Referensi Antropometri Anak WHO / Permenkes No. 2 Tahun 2020 (Diperluas dari 2 - 18 Tahun)
@@ -661,6 +708,9 @@
                     el.addEventListener('change', autoGeneratePESDraft);
                 }
             });
+             document.querySelectorAll('.diet-item').forEach(item => {
+        item.addEventListener('change', generateTujuanDiet);
+           });
 
             // Set flag edit ketika pengguna mengetik secara manual di kolom PES
             document.getElementById('nutrition-diagnosis').addEventListener('input', () => {
@@ -1043,7 +1093,6 @@
                 const diare = document.getElementById('gi-diare').checked;
                 const sulitMenelan = document.getElementById('gi-menelan').checked;
 
-                // Memperbaiki lingkup variabel gejalas agar tidak terjadi crash 'gejalas is not defined'
                 let gejalas = [];
                 if (mual) gejalas.push('mual');
                 if (muntah) gejalas.push('muntah');
@@ -1099,7 +1148,7 @@
                 const heightM = height / 100;
                 const bmi = weight / (heightM * heightM);
                 
-                // PENENTUAN STATUS GIZI DEWASA VS ANAK (BATASAN RUANG ANAK SAMPAI 18 TAHUN)
+                // PENENTUAN STATUS GIZI DEWASA VS ANAK
                 let statusGiziDisplay = "";
                 let statusGiziKategori = "";
                 
@@ -1108,7 +1157,7 @@
 
                 if ((isChildUnder5 || isPediatricUnder18) && bmi > 0) {
                     let evalAge = calculatedAgeYears;
-                    if (evalAge < 2) evalAge = 2; // Batas minimal tabel interpolasi
+                    if (evalAge < 2) evalAge = 2;
                     const childResult = getChildNutritionalStatus(evalAge, gender, bmi);
                     statusGiziKategori = childResult.status;
                     statusGiziDisplay = `${childResult.status} (Anak - Permenkes No. 2/2020, Z-Score Est: ${childResult.z.toFixed(2)} SD)`;
@@ -1121,29 +1170,36 @@
                     statusGiziDisplay = `${statusGiziKategori} (Dewasa / Standar Umum)`;
                 }
 
+                // =========================================================================
+                // 📍 [PEMBARUAN 1] LOGIKA HITUNG BBI & PENENTUAN BASIS BB UNTUK BMR
+                // =========================================================================
+                const bbi = calculateBBI(height, gender, calculatedAgeYears);
+                const weightBaseChoice = document.getElementById('weight-base')?.value || 'bba';
+                let weightForBMR = (weightBaseChoice === 'bbi' && bbi > 0) ? bbi : weight;
+
                 let bmr = 0;
                 if (formula === 'mifflin') {
                     if (gender === 'male') {
-                        bmr = (10 * weight) + (6.25 * height) - (5 * calculatedAgeYears) + 5;
+                        bmr = (10 * weightForBMR) + (6.25 * height) - (5 * calculatedAgeYears) + 5;
                     } else {
-                        bmr = (10 * weight) + (6.25 * height) - (5 * calculatedAgeYears) - 161;
+                        bmr = (10 * weightForBMR) + (6.25 * height) - (5 * calculatedAgeYears) - 161;
                     }
                 } else if (formula === 'harris') {
                     if (gender === 'male') {
-                        bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * calculatedAgeYears);
+                        bmr = 88.362 + (13.397 * weightForBMR) + (4.799 * height) - (5.677 * calculatedAgeYears);
                     } else {
-                        bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * calculatedAgeYears);
+                        bmr = 447.593 + (9.247 * weightForBMR) + (3.098 * height) - (4.330 * calculatedAgeYears);
                     }
                 } else if (formula === 'schofield') {
                     if (calculatedAgeYears < 3) {
-                        if (gender === 'male') bmr = (59.512 * weight) - 30.4;
-                        else bmr = (58.317 * weight) - 31.1;
+                        if (gender === 'male') bmr = (59.512 * weightForBMR) - 30.4;
+                        else bmr = (58.317 * weightForBMR) - 31.1;
                     } else if (calculatedAgeYears < 10) {
-                        if (gender === 'male') bmr = (22.706 * weight) + 495;
-                        else bmr = (20.315 * weight) + 485.9;
+                        if (gender === 'male') bmr = (22.706 * weightForBMR) + 495;
+                        else bmr = (20.315 * weightForBMR) + 485.9;
                     } else {
-                        if (gender === 'male') bmr = (17.686 * weight) + 658.2;
-                        else bmr = (13.384 * weight) + 692.6;
+                        if (gender === 'male') bmr = (17.686 * weightForBMR) + 658.2;
+                        else bmr = (13.384 * weightForBMR) + 692.6;
                     }
                 }
 
@@ -1161,6 +1217,12 @@
                 const fatG = fatKcal / 9;
                 const carbG = carbKcal / 4;
 
+                // =========================================================================
+                // 📍 [PEMBARUAN 2] BENTUK MAKANAN & TUJUAN DIET
+                // =========================================================================
+                const bentukMakanan = document.querySelector('input[name="bentuk-makanan"]:checked')?.value || 'Biasa';
+                const tujuanDiet = document.getElementById('tujuan-diet')?.value.trim() || '-';
+
                 // Render output layar kanan
                 document.getElementById('out-name').textContent = name;
                 document.getElementById('out-no-rm').textContent = noRm;
@@ -1168,11 +1230,22 @@
                 document.getElementById('out-jenis-pasien').textContent = jenisPasien;
                 document.getElementById('out-address').textContent = address;
                 document.getElementById('out-age').textContent = `${calculatedAgeYears} Tahun, ${calculatedAgeMonths} Bulan`;
-                document.getElementById('out-anthropometry').textContent = `${height} cm / ${weight} kg`;
+                
+                // Menampilkan TB, BB, dan BBI
+                document.getElementById('out-anthropometry').textContent = `${height} cm / BB: ${weight} kg (BBI: ${bbi.toFixed(1)} kg)`;
+                
                 document.getElementById('out-bmi').textContent = bmi.toFixed(1);
                 document.getElementById('out-status-gizi').textContent = statusGiziDisplay;
                 document.getElementById('out-med-diag').textContent = medDiagnosis;
                 document.getElementById('out-diet-preskripsi').textContent = selectedDietsText;
+
+                // Render Bentuk Makanan & Tujuan Diet di UI jika elemennya tersedia
+                if (document.getElementById('out-bentuk-makanan')) {
+                    document.getElementById('out-bentuk-makanan').textContent = bentukMakanan;
+                }
+                if (document.getElementById('out-tujuan-diet')) {
+                    document.getElementById('out-tujuan-diet').textContent = tujuanDiet;
+                }
 
                 document.getElementById('out-bmr').textContent = `${Math.round(bmr)} kcal`;
                 document.getElementById('out-tee').innerHTML = `${Math.round(tee)} <span class="text-sm font-normal text-slate-500">kcal/hari</span>`;
@@ -1201,15 +1274,27 @@
                 document.getElementById('out-koles').textContent = koles ? `${koles} mg/dL` : '-';
                 document.getElementById('out-kreatin').textContent = kreatin ? `${kreatin} mg/dL` : '-';
 
-                // Menampilkan Intervensi & Monev Manual di Lembar Hasil Cetak
+                // Menampilkan Intervensi & Monev Manual
                 document.getElementById('out-intervensi').textContent = userIntervention || '-';
                 document.getElementById('out-monev').textContent = userMonev || '-';
 
-                // Ambil modifikasi manual terakhir dari kolom PES di sebelah kiri
+                // Ambil modifikasi manual terakhir dari kolom PES
                 const finalPESValue = document.getElementById('nutrition-diagnosis').value;
                 document.getElementById('out-pes').textContent = finalPESValue;
 
-                // Paket data untuk dikirim & diunduh (Menambahkan kunci umur eksplisit)
+                // Paket data untuk dikirim & diunduh (termasuk BBI, Bentuk Makanan, & Tujuan Diet)
+                // Gabungkan Teks Intervensi di Frontend
+                const fullInterventionText = 
+                `[BENTUK MAKANAN]
+                ${bentukMakanan}
+                
+                [TUJUAN DIET]
+                ${tujuanDiet}
+                
+                [CATATAN INTERVENSI MANUAL]
+                ${userIntervention || '-'}`;
+                
+                // Paket data untuk dikirim & diunduh
                 globalCalculatedData = {
                     noRm: noRm,
                     nama: name,
@@ -1224,6 +1309,7 @@
                     alamat: address,
                     berat: weight,
                     tinggi: height,
+                    bbi: bbi.toFixed(1),
                     imt: `${bmi.toFixed(1)} (${statusGiziKategori})`,
                     bmr: Math.round(bmr),
                     tee: Math.round(tee),
@@ -1231,16 +1317,18 @@
                     lemak: `${fatG.toFixed(1)}g (${Math.round(fatKcal)} kcal)`,
                     karbohidrat: `${carbG.toFixed(1)}g (${Math.round(carbKcal)} kcal)`,
                     riwayatDiet: dietHistoryCombined,
+                    bentukMakanan: bentukMakanan,
+                    tujuanDiet: tujuanDiet,
                     diagnosisGizi: finalPESValue,
                     biokimia: `Hb: ${hb || '-'}, Alb: ${albumin || '-'}, GDS: ${gds || '-'}, Leuko: ${leuko || '-'}, Trombo: ${trombo || '-'}, Eritro: ${eritro || '-'}, AUrat: ${aurat || '-'}, Koles: ${koles || '-'}, Kreatin: ${kreatin || '-'}`,
                     klinis: `TD: ${bp}, Temp: ${temp || '-'}°C, HR: ${hr} bpm, RR: ${rr} x/m, Gejala: ${gejalas.join(', ') || 'Nihil'}`,
                     skriningGizi: screeningResultText,
                     rencanaDiet: selectedDietsText,
-                    intervensi: userIntervention || '-', 
+                    intervensi: fullInterventionText, // <-- Menggunakan teks intervensi gabungan
                     monev: userMonev || '-' 
                 };
 
-                // AKTIFKAN TOMBOL SIMPAN SPREADSHEET (Membuka tanda silang merah)
+                // AKTIFKAN TOMBOL SIMPAN SPREADSHEET
                 const btnSave = document.getElementById('btn-save-sheets');
                 btnSave.disabled = false;
                 btnSave.classList.remove('opacity-50', 'cursor-not-allowed');
@@ -1322,13 +1410,12 @@
         }
 
         function downloadSummaryFile(data) {
-            const content = `LAPORAN ASUHAN GIZI PASIEN
+    const content = `LAPORAN ASUHAN GIZI PASIEN
 ==================================================
 TANGGAL PEMERIKSAAN : ${data.tanggalMasuk}
 NO REKAM MEDIS      : ${data.noRm}
 NAMA PASIEN         : ${data.nama}
-TANGGAL LAHIR       : ${data.dob}
-UMUR                : ${data.umur}
+TANGGAL LAHIR       : ${data.dob} (${data.umur})
 JENIS KELAMIN       : ${data.gender}
 ALAMAT PASIEN       : ${data.alamat}
 --------------------------------------------------
@@ -1336,7 +1423,7 @@ RUANG / KELAS       : ${data.ruangRawat} / ${data.kelasRawat}
 JENIS PASIEN        : ${data.jenisPasien}
 DIAGNOSA MEDIS      : ${data.diagnosaMedis}
 --------------------------------------------------
-ANTROPOMETRI        : TB ${data.tinggi} cm / BB ${data.berat} kg
+ANTROPOMETRI        : TB ${data.tinggi} cm / BB ${data.berat} kg (BBI: ${data.bbi} kg)
 HASIL IMT / INDEKS  : ${data.imt}
 ESTIMASI BMR        : ${data.bmr} kcal
 ESTIMASI TEE        : ${data.tee} kcal
@@ -1356,17 +1443,16 @@ MONITORING & EVALUASI :
 ${data.monev}
 ==================================================`;
 
-            const blob = new Blob([content], { type: 'text/plain;charset=utf-8;' });
-            const link = document.createElement("a");
-            const url = URL.createObjectURL(blob);
-            link.setAttribute("href", url);
-            link.setAttribute("download", `Laporan_Asuhan_Gizi_${data.noRm}_${data.nama.replace(/\s+/g, '_')}.txt`);
-            link.style.visibility = 'hidden';
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
+    const blob = new Blob([content], { type: 'text/plain;charset=utf-8;' });
+    const link = document.createElement("a");
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Laporan_Asuhan_Gizi_${data.noRm}_${data.nama.replace(/\s+/g, '_')}.txt`);
+    link.style.visibility = 'hidden';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
         // =========================================================================
         // KODE JAVASCRIPT INTEGRASI OCR / SCAN MULTI-HALAMAN
         // =========================================================================
@@ -1689,6 +1775,70 @@ function populateFormWithOcrData(data) {
         calculateNutrition();
     } else {
         alert("Pindaian berhasil! Data terbaca dan diisikan ke dalam form. Silakan periksa kembali dan lengkapi kolom yang belum terisi sebelum menekan Hitung.");
+    }
+}
+    // Database Kamus Tujuan Diet (Auto-linked ke daftar Diet yang ada)
+const databaseTujuanDiet = {
+    "Diet Makanan Biasa": "Memberikan makanan sesuai kebutuhan gizi untuk mempertahankan status gizi optimal.",
+    "Diet TKTP": "Memenuhi kebutuhan energi dan protein yang meningkat untuk mencegah katabolisme jaringan dan mempercepat pemulihan.",
+    "Diet Rendah Purin": "Membatasi asupan purin guna menurunkan kadar asam urat serum dan mencegah pembentukan kristal asam urat.",
+    "Diet Lambung": "Meringankan beban kerja lambung, menetralkan asam lambung, serta meminimalkan iritasi mukosa lambung.",
+    "Diet Rendah Garam": "Membatasi asupan natrium guna membantu mengontrol tekanan darah dan menurunkan retensi cairan (edema).",
+    "Diet Diabetes Melitus (DM)": "Mencapai dan mempertahankan kadar glukosa darah mendekati normal serta mencegah komplikasi kronis.",
+    "Diet DM Tanpa Komplikasi": "Menjaga kestabilan glukosa darah dengan prinsip tepat jadwal, jumlah, dan jenis makanan (3J).",
+    "Diet DM Dengan Komplikasi Ginjal Kronik": "Mengontrol glukosa darah serta membatasi asupan protein dan mineral untuk meredakan beban ekskresi ginjal.",
+    "Diet Diabetes Melitus 1500": "Memberikan asupan energi terbatasi 1500 kcal guna mengontrol glukosa darah dan menurunkan berat badan secara terukur.",
+    "Diet Diabetes Melitus 1700": "Memberikan energi terstandar 1700 kcal guna menjaga kestabilan kadar glukosa darah harian.",
+    "Diet Diabetes Melitus 1900": "Memberikan asupan energi 1900 kcal untuk menjaga kestabilan glukosa darah pada pasien aktivitas sedang.",
+    "Diet Ginjal Kronik": "Meringankan kerja ginjal dengan membatasi asupan protein, natrium, kalium, dan fosfor.",
+    "Diet Ginjal Kronik dengan HD": "Memenuhi kebutuhan protein yang hilang selama proses hemodialisis dan menjaga keseimbangan cairan.",
+    "Diet Gangguan Ginjal Akut": "Mencegah katabolisme protein berlebih dan menjaga keseimbangan cairan-elektrolit selama fase akut.",
+    "Diet Batu Ginjal dan ISK": "Mencegah pembentukan batu ginjal baru dengan mengontrol asupan mineral/oksalat dan mengoptimalkan diuresis.",
+    "Diet Dislipidemia": "Menurunkan kadar kolesterol total, LDL, dan trigliserida serum guna meminimalkan risiko kardiovaskular.",
+    "Diet Stroke dengan Penyakit Jantung": "Memberikan makanan lunak/mudah cerna serta membatasi natrium dan kolesterol untuk mendukung fungsi vaskular.",
+    "Diet Energi Rendah Kalori Rendah": "Mencapai defisit kalori terukur guna menurunkan berat badan menuju IMT ideal secara bertahap.",
+    "Diet Luka Bakar": "Memenuhi kebutuhan tinggi energi dan protein (TKTP) untuk mempercepat fase epitelisasi dan regenerasi jaringan.",
+    "Diet Hati Kantung Empedu": "Meringankan beban metabolisme hepar dan kantung empedu serta mencegah kerusakan sel hati lebih lanjut.",
+    "Diet Atritis": "Mengurangi peradangan sendi dan membantu penurunan berat badan guna mengurangi beban tumpuan sendi.",
+    "Diet TB Paru": "Memenuhi peningkatan kebutuhan energi dan protein akibat kondisi hipermetabolisme infeksi tuberkulosis.",
+    "Diet Gizi Seimbang": "Mempertahankan kondisi status gizi optimal dan pemenuhan kecukupan gizi harian.",
+    "Diet Rendah Serat": "Mengurangi volume feses dan meminimalkan peristaltik saluran cerna pada kondisi iritasi gastrointestinal."
+};
+
+// Fungsi Otomatis Hitung BBI (Rumus Broca Modifikasi)
+function calculateBBI(height, gender, ageYears) {
+    if (!height || height <= 0) return 0;
+    if (ageYears < 10 && ageYears > 0) return (ageYears * 2) + 8; // BBI Anak
+    
+    // Dewasa
+    let bbi = 0;
+    if (gender === 'male') {
+        bbi = (height > 160) ? (height - 100) - (0.10 * (height - 100)) : (height - 100);
+    } else {
+        bbi = (height > 150) ? (height - 100) - (0.10 * (height - 100)) : (height - 100);
+    }
+    return Math.max(bbi, 0);
+}
+
+// Fungsi Auto-Generate Tujuan Diet berdasarkan Checklist Diet
+function generateTujuanDiet() {
+    let selectedDiets = [];
+    document.querySelectorAll('.diet-item:checked').forEach(item => {
+        selectedDiets.push(item.value);
+    });
+
+    let listTujuan = [];
+    selectedDiets.forEach(diet => {
+        if (databaseTujuanDiet[diet]) {
+            listTujuan.push(`• ${databaseTujuanDiet[diet]}`);
+        }
+    });
+
+    const outputTextarea = document.getElementById('tujuan-diet');
+    if (listTujuan.length > 0) {
+        outputTextarea.value = [...new Set(listTujuan)].join("\n");
+    } else {
+        outputTextarea.value = "• Memberikan makanan sesuai kebutuhan gizi untuk mempertahankan status gizi optimal.";
     }
 }
         function resetForm() {
