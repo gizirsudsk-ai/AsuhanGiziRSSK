@@ -86,6 +86,11 @@
                             <input type="date" id="exam-date" onchange="calculateAge()" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm">
                         </div>
                         <div>
+                            <label class="block text-xs font-bold text-teal-800 uppercase mb-1">Tanggal Asuhan (Manual / Backdate)</label>
+                            <input type="date" id="asuhan-date" class="w-full px-3 py-2 border border-teal-300 bg-teal-50/40 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm">
+                            <span class="text-[10px] text-slate-400 font-normal italic">*Kosongkan jika diisi/diinput pada hari yang sama</span>
+                        </div>
+                        <div>
                             <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Alamat Pasien</label>
                             <textarea id="address" rows="1" placeholder="cth: Jl. Merdeka No. 12" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm"></textarea>
                         </div>
@@ -655,7 +660,7 @@
         // =========================================================================
         // PENGATURAN TAUTAN GOOGLE SPREADSHEETS (BAKU)
         // =========================================================================
-        const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxe_mno-xs8EN5eEaIoZbQa9Jq6ekda5CUtmDeTpX9779aDLaWr4ZATIrLLWY_FiOfylw/exec";
+        const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwmfrfKjhYMgTlfGVJFl0aPIEtab3xca5lN1vfPCf2PC86QZNO28-i9MBun5BpATtPJCA/exec";
         // =========================================================================
 
         // Referensi Antropometri Anak WHO / Permenkes No. 2 Tahun 2020 (Diperluas dari 2 - 18 Tahun)
@@ -1070,6 +1075,7 @@
                 const kelasRawat = document.querySelector('input[name="kelas-rawat"]:checked').value;
                 const jenisPasien = document.querySelector('input[name="jenis-pasien"]:checked').value;
                 const examDate = document.getElementById('exam-date').value || '-';
+                const asuhanDate = document.getElementById('asuhan-date').value || '';
 
                 // Data Lab & Penunjang
                 const hb = parseFloat(document.getElementById('bio-hb').value);
@@ -1306,6 +1312,7 @@
                     jenisPasien: jenisPasien,
                     tanggalMasuk: examDate,
                     diagnosaMedis: medDiagnosis,
+                    tanggalAsuhan: asuhanDate,
                     alamat: address,
                     berat: weight,
                     tinggi: height,
@@ -1658,6 +1665,11 @@ function populateFormWithOcrData(data) {
         const isoExam = formatToISODate(examDateVal);
         if (isoExam) document.getElementById('exam-date').value = isoExam;
     }
+    const asuhanDateVal = getVal('asuhanDate', 'tanggalAsuhan', 'tglAsuhan');
+    if (asuhanDateVal) {
+        const isoAsuhan = formatToISODate(asuhanDateVal);
+        if (isoAsuhan) document.getElementById('asuhan-date').value = isoAsuhan;
+    }
 
     const addressVal = getVal('address', 'alamat');
     if (addressVal) document.getElementById('address').value = addressVal;
@@ -1845,6 +1857,7 @@ function generateTujuanDiet() {
             isPesEdited = false;
             document.getElementById('name').value = '';
             document.getElementById('no-rm').value = '';
+            document.getElementById('asuhan-date').value = '';
             document.getElementById('address').value = '';
             document.getElementById('dob').value = '';
             document.getElementById('height').value = '';
