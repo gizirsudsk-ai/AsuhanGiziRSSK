@@ -991,6 +991,7 @@ function calculatePediatricPermenkes2020(gender, totalMonths, ageYears, weight, 
             }
         }
         // FUNGSI UTAMA AUTO-GENERATE PES SECARA LIVE (REAL-TIME) - SANGAT CERDAS
+        // FUNGSI UTAMA AUTO-GENERATE PES SECARA LIVE (REAL-TIME) - SANGAT CERDAS & UTUH 100%
         function autoGeneratePESDraft() {
             if (isPesEdited) return; // Kunci draf jika pengguna sudah mengedit manual
 
@@ -1049,6 +1050,8 @@ function calculatePediatricPermenkes2020(gender, totalMonths, ageYears, weight, 
 
             // Aturan penentuan diagnosis anak vs dewasa sesuai kriteria klinis terbaru
             let statusGiziKategori = "";
+            let pediaResult = null; // 📍 DEKLARASI DIPERBAIKI (Mencegah pediaResult is not defined)
+
             const isChildUnder5 = (totalMonths <= 60 && totalMonths > 0);
             const isPediatricUnder18 = (ruangRawat === "Rawat Inap Anak" && calculatedAgeYears < 18);
 
@@ -1056,6 +1059,12 @@ function calculatePediatricPermenkes2020(gender, totalMonths, ageYears, weight, 
                 if (isChildUnder5 || isPediatricUnder18) {
                     let evalAge = calculatedAgeYears;
                     if (evalAge < 2) evalAge = 2; // Batas minimal tabel interpolasi
+                    
+                    // Hitung parameter Permenkes 2020 untuk anak
+                    if (typeof calculatePediatricPermenkes2020 === 'function') {
+                        pediaResult = calculatePediatricPermenkes2020(gender, totalMonths, calculatedAgeYears, weight, height, bmi);
+                    }
+                    
                     const childResult = getChildNutritionalStatus(evalAge, gender, bmi);
                     statusGiziKategori = childResult.status;
                 } else {
@@ -1140,17 +1149,21 @@ function calculatePediatricPermenkes2020(gender, totalMonths, ageYears, weight, 
             }
 
             // D. Evaluasi Antropometri
-            if (statusGiziKategori && (statusGiziKategori.includes("Sangat Kurus") || statusGiziKategori.includes("Kurus"))) {
+            if (statusGiziKategori && (statusGiziKategori.includes("Sangat Kurus") || statusGiziKategori.includes("Kurus") || statusGiziKategori.includes("Gizi Buruk") || statusGiziKategori.includes("Gizi Kurang"))) {
                 if (!pesList.some(item => item.includes("NC.3.1"))) {
-                    pesList.push(`[NC.3.1] Berat Badan Kurang berkaitan dengan asupan makanan tidak adekuat jangka panjang ditandai dengan status gizi: ${statusGiziKategori}.`);
+                    pesList.push(`[NC.3.1] Berat Badan Kurang / Gizi Kurang berkaitan dengan asupan makanan tidak adekuat jangka panjang ditandai dengan status gizi: ${statusGiziKategori}.`);
                 }
             } else if (statusGiziKategori && (statusGiziKategori.includes("Obesitas") || statusGiziKategori.includes("Gizi Lebih"))) {
                 if (!pesList.some(item => item.includes("NC.3.3"))) {
                     pesList.push(`[NC.3.3] Obesitas/Gizi Lebih berkaitan dengan ketidakseimbangan asupan zat gizi energi tinggi ditandai dengan status gizi: ${statusGiziKategori}.`);
                 }
-                if (pediaResult && pediaResult.tbu.status.includes("Pendek")) {
-                pesList.push(`[NC.3.2] Pertumbuhan linier terhambat (Stunting) berkaitan dengan asupan gizi makro dan mikro tidak adekuat jangka panjang ditandai dengan Indeks TB/U: ${pediaResult.tbu.status}.`);
-               }
+            }
+
+            // 📍 DETEKSI STUNTING (DIPISAHAN BERDIRI SENDIRI & AMAN)
+            if (pediaResult && pediaResult.tbu && pediaResult.tbu.status && pediaResult.tbu.status.includes("Pendek")) {
+                if (!pesList.some(item => item.includes("NC.3.2"))) {
+                    pesList.push(`[NC.3.2] Pertumbuhan linier terhambat (Stunting) berkaitan dengan asupan gizi makro dan mikro tidak adekuat jangka panjang ditandai dengan Indeks TB/U: ${pediaResult.tbu.status}.`);
+                }
             }
         
             // E. Gejala Gastrointestinal
