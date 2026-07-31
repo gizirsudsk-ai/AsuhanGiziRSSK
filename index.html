@@ -1598,6 +1598,25 @@ function calculatePediatricPermenkes2020(gender, totalMonths, ageYears, weight, 
                 console.error(err);
             }
         }
+    // =========================================================================
+// FUNGSI JEMBATAN (PENCEGAH ERROR getChildNutritionalStatus is not defined)
+// =========================================================================
+function getChildNutritionalStatus(ageY, gender, bmi) {
+    const months = (typeof totalMonths !== 'undefined' && totalMonths > 0) 
+        ? totalMonths 
+        : (ageY * 12);
+    
+    const weight = parseFloat(document.getElementById('weight')?.value) || 0;
+    const height = parseFloat(document.getElementById('height')?.value) || 0;
+
+    // Dialihkan secara otomatis ke kalkulator Permenkes No. 2 Tahun 2020
+    const res = calculatePediatricPermenkes2020(gender, months, ageY, weight, height, bmi);
+    
+    return {
+        status: res.statusUtama,
+        z: res.bbtb.z || res.imtu.z || 0
+    };
+}
 
         function downloadSummaryFile(data) {
     const pediaText = (data.bbtbStatus && data.bbtbStatus !== "N/A (Dewasa)") 
