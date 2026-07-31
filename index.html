@@ -563,6 +563,16 @@
                         <p><strong class="inline-block w-28 text-slate-500">TB / BB:</strong> <span id="out-anthropometry" class="font-semibold text-slate-800">-</span></p>
                         <p><strong class="inline-block w-28 text-slate-500">Hasil IMT:</strong> <span id="out-bmi" class="font-semibold text-slate-800">-</span></p>
                         <p><strong class="inline-block w-28 text-slate-500">Status Gizi:</strong> <span id="out-status-gizi" class="font-bold text-teal-800">-</span></p>
+                        <!-- TAMBAHAN STATUS GIZI ANAK 3 PARAMETER PERMENKES 2020 -->
+                        <div id="pediatric-status-container" class="hidden mt-3 p-3 bg-teal-50/80 rounded-lg border border-teal-200 text-xs space-y-1.5">
+                            <h4 class="font-bold text-teal-900 uppercase text-[10px] tracking-wider border-b border-teal-200 pb-1">
+                                👶 Parameter Gizi Anak (Permenkes No. 2/2020)
+                            </h4>
+                            <p><strong>1. BB/U (Berat/Umur):</strong> <span id="out-pedia-bbu" class="font-semibold text-slate-800">-</span></p>
+                            <p><strong>2. TB/U (Tinggi/Umur):</strong> <span id="out-pedia-tbu" class="font-bold text-rose-700">-</span></p>
+                            <p><strong>2. BB/TB (Berat/Tinggi):</strong> <span id="out-pedia-bbtb" class="font-semibold text-teal-800">-</span></p>
+                            <p><strong>3. IMT/U (IMT/Umur):</strong> <span id="out-pedia-imtu" class="font-semibold text-slate-800">-</span></p>
+                        </div>
                         <p><strong class="inline-block w-28 text-slate-500">Diagnosa Medis:</strong> <span id="out-med-diag" class="font-semibold text-slate-800">-</span></p>
                     </div>
 
@@ -663,23 +673,191 @@
         const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwmfrfKjhYMgTlfGVJFl0aPIEtab3xca5lN1vfPCf2PC86QZNO28-i9MBun5BpATtPJCA/exec";
         // =========================================================================
 
-        // Referensi Antropometri Anak WHO / Permenkes No. 2 Tahun 2020 (Diperluas dari 2 - 18 Tahun)
-        const childBmiRef = {
-            male: [
-                {age: 2, med: 16.2, sd: 1.1}, {age: 3, med: 15.8, sd: 1.1}, {age: 4, med: 15.5, sd: 1.1}, {age: 5, med: 15.3, sd: 1.2},
-                {age: 6, med: 15.2, sd: 1.3}, {age: 7, med: 15.4, sd: 1.4}, {age: 8, med: 15.7, sd: 1.6}, {age: 9, med: 16.0, sd: 1.8},
-                {age: 10, med: 16.6, sd: 2.0}, {age: 11, med: 17.2, sd: 2.2}, {age: 12, med: 17.8, sd: 2.4}, {age: 13, med: 18.5, sd: 2.6},
-                {age: 14, med: 19.2, sd: 2.8}, {age: 15, med: 19.9, sd: 2.9}, {age: 16, med: 20.5, sd: 3.0}, {age: 17, med: 21.1, sd: 3.1},
-                {age: 18, med: 21.6, sd: 3.2}
-            ],
-            female: [
-                {age: 2, med: 16.0, sd: 1.2}, {age: 3, med: 15.6, sd: 1.1}, {age: 4, med: 15.3, sd: 1.1}, {age: 5, med: 15.1, sd: 1.2},
-                {age: 6, med: 15.1, sd: 1.3}, {age: 7, med: 15.2, sd: 1.4}, {age: 8, med: 15.5, sd: 1.6}, {age: 9, med: 15.9, sd: 1.8},
-                {age: 10, med: 16.4, sd: 2.1}, {age: 11, med: 17.0, sd: 2.3}, {age: 12, med: 17.6, sd: 2.5}, {age: 13, med: 18.2, sd: 2.7},
-                {age: 14, med: 18.9, sd: 2.8}, {age: 15, med: 19.4, sd: 2.9}, {age: 16, med: 19.9, sd: 2.9}, {age: 17, med: 20.3, sd: 2.9},
-                {age: 18, med: 20.6, sd: 2.9}
-            ]
-        };
+        // =========================================================================
+// =========================================================================
+// TABEL REFERENSI PERMENKES NO. 2 TAHUN 2020 (LENGKAP DENGAN STUNTING TB/U)
+// =========================================================================
+
+// A. Referensi BB/U (0 - 60 Bulan)
+const refBBU = {
+    male: [
+        {m: 0, med: 3.3, sdNeg1: 2.9, sdPos1: 3.9}, {m: 6, med: 7.9, sdNeg1: 7.1, sdPos1: 8.8},
+        {m: 12, med: 9.6, sdNeg1: 8.6, sdPos1: 10.8}, {m: 18, med: 10.9, sdNeg1: 9.7, sdPos1: 12.2},
+        {m: 24, med: 12.2, sdNeg1: 10.8, sdPos1: 13.6}, {m: 36, med: 14.3, sdNeg1: 12.7, sdPos1: 16.2},
+        {m: 48, med: 16.3, sdNeg1: 14.4, sdPos1: 18.6}, {m: 60, med: 18.3, sdNeg1: 16.0, sdPos1: 21.0}
+    ],
+    female: [
+        {m: 0, med: 3.2, sdNeg1: 2.8, sdPos1: 3.7}, {m: 6, med: 7.3, sdNeg1: 6.5, sdPos1: 8.2},
+        {m: 12, med: 8.9, sdNeg1: 7.9, sdPos1: 10.1}, {m: 18, med: 10.2, sdNeg1: 9.0, sdPos1: 11.5},
+        {m: 24, med: 11.5, sdNeg1: 10.2, sdPos1: 13.0}, {m: 36, med: 13.9, sdNeg1: 12.2, sdPos1: 15.8},
+        {m: 48, med: 16.1, sdNeg1: 14.0, sdPos1: 18.5}, {m: 60, med: 18.2, sdNeg1: 15.8, sdPos1: 21.2}
+    ]
+};
+
+// B. 📍 REFERENSI TB/U atau PB/U (0 - 60 Bulan) - DETEKTOR STUNTING
+const refTBU = {
+    male: [
+        {m: 0, med: 49.9, sdNeg1: 48.0, sdPos1: 51.8}, {m: 6, med: 67.6, sdNeg1: 65.5, sdPos1: 69.8},
+        {m: 12, med: 75.7, sdNeg1: 73.4, sdPos1: 78.1}, {m: 18, med: 82.3, sdNeg1: 79.8, sdPos1: 84.8},
+        {m: 24, med: 87.8, sdNeg1: 85.2, sdPos1: 90.4}, {m: 36, med: 96.1, sdNeg1: 93.2, sdPos1: 99.0},
+        {m: 48, med: 103.3, sdNeg1: 100.2, sdPos1: 106.4}, {m: 60, med: 110.0, sdNeg1: 106.7, sdPos1: 113.3}
+    ],
+    female: [
+        {m: 0, med: 49.1, sdNeg1: 47.3, sdPos1: 51.0}, {m: 6, med: 65.7, sdNeg1: 63.5, sdPos1: 67.8},
+        {m: 12, med: 74.0, sdNeg1: 71.6, sdPos1: 76.4}, {m: 18, med: 80.7, sdNeg1: 78.1, sdPos1: 83.2},
+        {m: 24, med: 86.4, sdNeg1: 83.7, sdPos1: 89.1}, {m: 36, med: 95.1, sdNeg1: 92.1, sdPos1: 98.0},
+        {m: 48, med: 102.7, sdNeg1: 99.5, sdPos1: 105.9}, {m: 60, med: 109.4, sdNeg1: 105.9, sdPos1: 112.8}
+    ]
+};
+
+// C. Referensi BB/TB (Tinggi 65 - 120 cm)
+const refBBTB = {
+    male: [
+        {h: 65, med: 7.2, sdNeg1: 6.6, sdPos1: 7.9}, {h: 70, med: 8.3, sdNeg1: 7.6, sdPos1: 9.1},
+        {h: 75, med: 9.3, sdNeg1: 8.5, sdPos1: 10.2}, {h: 80, med: 10.2, sdNeg1: 9.4, sdPos1: 11.2},
+        {h: 85, med: 11.1, sdNeg1: 10.2, sdPos1: 12.2}, {h: 90, med: 12.1, sdNeg1: 11.1, sdPos1: 13.3},
+        {h: 95, med: 13.2, sdNeg1: 12.1, sdPos1: 14.5}, {h: 100, med: 14.4, sdNeg1: 13.2, sdPos1: 15.8},
+        {h: 105, med: 15.6, sdNeg1: 14.3, sdPos1: 17.2}, {h: 110, med: 17.0, sdNeg1: 15.5, sdPos1: 18.7},
+        {h: 115, med: 18.5, sdNeg1: 16.9, sdPos1: 20.4}, {h: 120, med: 20.2, sdNeg1: 18.4, sdPos1: 22.3}
+    ],
+    female: [
+        {h: 65, med: 6.8, sdNeg1: 6.2, sdPos1: 7.5}, {h: 70, med: 7.8, sdNeg1: 7.1, sdPos1: 8.6},
+        {h: 75, med: 8.8, sdNeg1: 8.0, sdPos1: 9.7}, {h: 80, med: 9.8, sdNeg1: 8.9, sdPos1: 10.8},
+        {h: 85, med: 10.8, sdNeg1: 9.8, sdPos1: 11.9}, {h: 90, med: 11.8, sdNeg1: 10.8, sdPos1: 13.0},
+        {h: 95, med: 12.9, sdNeg1: 11.8, sdPos1: 14.2}, {h: 100, med: 14.1, sdNeg1: 12.9, sdPos1: 15.6},
+        {h: 105, med: 15.4, sdNeg1: 14.1, sdPos1: 17.0}, {h: 110, med: 16.8, sdNeg1: 15.3, sdPos1: 18.6},
+        {h: 115, med: 18.4, sdNeg1: 16.8, sdPos1: 20.4}, {h: 120, med: 20.1, sdNeg1: 18.3, sdPos1: 22.4}
+    ]
+};
+
+// D. Referensi IMT/U (2 - 18 Tahun)
+const refIMTU = {
+    male: [
+        {ageY: 2, med: 16.2, sdNeg1: 15.1, sdPos1: 17.3}, {ageY: 3, med: 15.8, sdNeg1: 14.7, sdPos1: 16.9},
+        {ageY: 4, med: 15.5, sdNeg1: 14.4, sdPos1: 16.7}, {ageY: 5, med: 15.3, sdNeg1: 14.1, sdPos1: 16.6},
+        {ageY: 6, med: 15.2, sdNeg1: 13.9, sdPos1: 16.7}, {ageY: 7, med: 15.4, sdNeg1: 14.0, sdPos1: 17.0},
+        {ageY: 8, med: 15.7, sdNeg1: 14.1, sdPos1: 17.5}, {ageY: 9, med: 16.0, sdNeg1: 14.3, sdPos1: 18.1},
+        {ageY: 10, med: 16.6, sdNeg1: 14.6, sdPos1: 19.0}, {ageY: 11, med: 17.2, sdNeg1: 15.0, sdPos1: 20.0},
+        {ageY: 12, med: 17.8, sdNeg1: 15.4, sdPos1: 21.0}, {ageY: 13, med: 18.5, sdNeg1: 15.9, sdPos1: 22.0},
+        {ageY: 14, med: 19.2, sdNeg1: 16.4, sdPos1: 22.9}, {ageY: 15, med: 19.9, sdNeg1: 17.0, sdPos1: 23.8},
+        {ageY: 16, med: 20.5, sdNeg1: 17.5, sdPos1: 24.6}, {ageY: 17, med: 21.1, sdNeg1: 18.0, sdPos1: 25.3},
+        {ageY: 18, med: 21.6, sdNeg1: 18.4, sdPos1: 25.9}
+    ],
+    female: [
+        {ageY: 2, med: 16.0, sdNeg1: 14.8, sdPos1: 17.2}, {ageY: 3, med: 15.6, sdNeg1: 14.5, sdPos1: 16.8},
+        {ageY: 4, med: 15.3, sdNeg1: 14.2, sdPos1: 16.5}, {ageY: 5, med: 15.1, sdNeg1: 13.9, sdPos1: 16.5},
+        {ageY: 6, med: 15.1, sdNeg1: 13.8, sdPos1: 16.6}, {ageY: 7, med: 15.2, sdNeg1: 13.8, sdPos1: 17.0},
+        {ageY: 8, med: 15.5, sdNeg1: 13.9, sdPos1: 17.5}, {ageY: 9, med: 15.9, sdNeg1: 14.1, sdPos1: 18.2},
+        {ageY: 10, med: 16.4, sdNeg1: 14.3, sdPos1: 19.0}, {ageY: 11, med: 17.0, sdNeg1: 14.7, sdPos1: 20.0},
+        {ageY: 12, med: 17.6, sdNeg1: 15.1, sdPos1: 20.9}, {ageY: 13, med: 18.2, sdNeg1: 15.5, sdPos1: 21.8},
+        {ageY: 14, med: 18.9, sdNeg1: 16.1, sdPos1: 22.7}, {ageY: 15, med: 19.4, sdNeg1: 16.5, sdPos1: 23.4},
+        {ageY: 16, med: 19.9, sdNeg1: 17.0, sdPos1: 24.0}, {ageY: 17, med: 20.3, sdNeg1: 17.4, sdPos1: 24.5},
+        {ageY: 18, med: 20.6, sdNeg1: 17.7, sdPos1: 24.9}
+    ]
+};
+
+// Helper Hitung Z-Score Asimetris
+function computeZScore(val, refObj) {
+    if (val >= refObj.med) {
+        const sdUpper = refObj.sdPos1 - refObj.med;
+        return (val - refObj.med) / sdUpper;
+    } else {
+        const sdLower = refObj.med - refObj.sdNeg1;
+        return (val - refObj.med) / sdLower;
+    }
+}
+
+// FUNGSI UTAMA KALKULASI 4 PARAMETER GIZI ANAK PERMENKES 2/2020
+function calculatePediatricPermenkes2020(gender, totalMonths, ageYears, weight, height, bmi) {
+    const gen = (gender === 'male' || gender === 'Laki-laki') ? 'male' : 'female';
+    let result = {
+        bbu: { status: "N/A (> 60 bulan)", z: 0 },
+        tbu: { status: "N/A (> 60 bulan)", z: 0 }, // DETEKTOR STUNTING
+        bbtb: { status: "N/A", z: 0 },
+        imtu: { status: "N/A", z: 0 },
+        statusUtama: "-"
+    };
+
+    // 1. INDEKS BB/U (0 - 60 Bulan)
+    if (totalMonths <= 60 && totalMonths >= 0 && weight > 0) {
+        const listBBU = refBBU[gen];
+        let closestBBU = listBBU.reduce((prev, curr) => Math.abs(curr.m - totalMonths) < Math.abs(prev.m - totalMonths) ? curr : prev);
+        const zBBU = computeZScore(weight, closestBBU);
+        
+        let statusBBU = "Berat Badan Normal";
+        if (zBBU < -3) statusBBU = "Berat Badan Sangat Kurang (Severely Underweight)";
+        else if (zBBU >= -3 && zBBU < -2) statusBBU = "Berat Badan Kurang (Underweight)";
+        else if (zBBU > 1) statusBBU = "Risiko Berat Badan Lebih";
+
+        result.bbu = { status: statusBBU, z: zBBU };
+    }
+
+    // 2. 📍 INDEKS TB/U atau PB/U (0 - 60 Bulan) - DETEKTOR STUNTING PERMENKES 2020
+    if (totalMonths <= 60 && totalMonths >= 0 && height > 0) {
+        const listTBU = refTBU[gen];
+        let closestTBU = listTBU.reduce((prev, curr) => Math.abs(curr.m - totalMonths) < Math.abs(prev.m - totalMonths) ? curr : prev);
+        const zTBU = computeZScore(height, closestTBU);
+
+        let statusTBU = "Sangat Pendek (Severely Stunted)";
+        if (zTBU < -3) statusTBU = "Sangat Pendek (Severely Stunted)";
+        else if (zTBU >= -3 && zTBU < -2) statusTBU = "Pendek (Stunted)";
+        else if (zTBU >= -2 && zTBU <= 3) statusTBU = "Tinggi Badan Normal";
+        else if (zTBU > 3) statusTBU = "Tinggi (Tall)";
+
+        result.tbu = { status: statusTBU, z: zTBU };
+    }
+
+    // 3. INDEKS BB/TB (Khusus TB 65 - 120 cm / Balita)
+    if (height >= 65 && height <= 120 && weight > 0) {
+        const listBBTB = refBBTB[gen];
+        let closestBBTB = listBBTB.reduce((prev, curr) => Math.abs(curr.h - height) < Math.abs(prev.h - height) ? curr : prev);
+        const zBBTB = computeZScore(weight, closestBBTB);
+
+        let statusBBTB = "Gizi Baik (Normal)";
+        if (zBBTB < -3) statusBBTB = "Gizi Buruk (Severely Wasted)";
+        else if (zBBTB >= -3 && zBBTB < -2) statusBBTB = "Gizi Kurang (Wasted)";
+        else if (zBBTB > 1 && zBBTB <= 2) statusBBTB = "Berisiko Gizi Lebih";
+        else if (zBBTB > 2 && zBBTB <= 3) statusBBTB = "Gizi Lebih (Overweight)";
+        else if (zBBTB > 3) statusBBTB = "Obesitas (Obese)";
+
+        result.bbtb = { status: statusBBTB, z: zBBTB };
+    }
+
+    // 4. INDEKS IMT/U (2 - 18 Tahun)
+    if (ageYears >= 2 && ageYears <= 18 && bmi > 0) {
+        const listIMTU = refIMTU[gen];
+        let closestIMTU = listIMTU.reduce((prev, curr) => Math.abs(curr.ageY - ageYears) < Math.abs(prev.ageY - ageYears) ? curr : prev);
+        const zIMTU = computeZScore(bmi, closestIMTU);
+
+        let statusIMTU = "Gizi Baik (Normal)";
+        if (totalMonths <= 60) {
+            if (zIMTU < -3) statusIMTU = "Gizi Buruk (Severely Wasted)";
+            else if (zIMTU >= -3 && zIMTU < -2) statusIMTU = "Gizi Kurang (Wasted)";
+            else if (zIMTU > 1 && zIMTU <= 2) statusIMTU = "Berisiko Gizi Lebih";
+            else if (zIMTU > 2 && zIMTU <= 3) statusIMTU = "Gizi Lebih (Overweight)";
+            else if (zIMTU > 3) statusIMTU = "Obesitas (Obese)";
+        } else {
+            if (zIMTU < -3) statusIMTU = "Sangat Kurus (Severely Thin)";
+            else if (zIMTU >= -3 && zIMTU < -2) statusIMTU = "Kurus (Thin)";
+            else if (zIMTU > 1 && zIMTU <= 2) statusIMTU = "Gizi Lebih (Overweight)";
+            else if (zIMTU > 2) statusIMTU = "Obesitas (Obese)";
+        }
+
+        result.imtu = { status: statusIMTU, z: zIMTU };
+    }
+
+    // Penentuan Status Gizi Utama Ringkasan
+    if (totalMonths <= 60 && result.bbtb.status !== "N/A") {
+        let stuntingInfo = (result.tbu.status.includes("Pendek")) ? ` + ${result.tbu.status}` : "";
+        result.statusUtama = `${result.bbtb.status}${stuntingInfo}`;
+    } else if (result.imtu.status !== "N/A") {
+        result.statusUtama = result.imtu.status;
+    } else {
+        result.statusUtama = "Gizi Baik (Normal)";
+    }
+
+    return result;
+}
 
         let calculatedAgeYears = 0;
         let calculatedAgeMonths = 0;
@@ -812,22 +990,6 @@
                 return true;
             }
         }
-
-        // Interpolator Z-Score IMT/U (WHO 2007 untuk 2 - 18 Tahun)
-        function getChildNutritionalStatus(ageY, gender, bmi) {
-            const refList = childBmiRef[gender];
-            let closest = refList.reduce((prev, curr) => Math.abs(curr.age - ageY) < Math.abs(prev.age - ageY) ? curr : prev);
-            
-            const zScore = (bmi - closest.med) / closest.sd;
-            
-            if (zScore < -3) return { status: "Sangat Kurus (Severely Wasted)", z: zScore };
-            if (zScore >= -3 && zScore < -2) return { status: "Kurus (Wasted)", z: zScore };
-            if (zScore >= -2 && zScore <= 1) return { status: "Gizi Baik (Normal)", z: zScore };
-            if (zScore > 1 && zScore <= 2) return { status: "Berisiko Gizi Lebih", z: zScore };
-            if (zScore > 2 && zScore <= 3) return { status: "Gizi Lebih (Overweight)", z: zScore };
-            return { status: "Obesitas (Obese)", z: zScore };
-        }
-
         // FUNGSI UTAMA AUTO-GENERATE PES SECARA LIVE (REAL-TIME) - SANGAT CERDAS
         function autoGeneratePESDraft() {
             if (isPesEdited) return; // Kunci draf jika pengguna sudah mengedit manual
@@ -986,8 +1148,11 @@
                 if (!pesList.some(item => item.includes("NC.3.3"))) {
                     pesList.push(`[NC.3.3] Obesitas/Gizi Lebih berkaitan dengan ketidakseimbangan asupan zat gizi energi tinggi ditandai dengan status gizi: ${statusGiziKategori}.`);
                 }
+                if (pediaResult && pediaResult.tbu.status.includes("Pendek")) {
+                pesList.push(`[NC.3.2] Pertumbuhan linier terhambat (Stunting) berkaitan dengan asupan gizi makro dan mikro tidak adekuat jangka panjang ditandai dengan Indeks TB/U: ${pediaResult.tbu.status}.`);
+               }
             }
-
+        
             // E. Gejala Gastrointestinal
             let gejalas = [];
             if (mual) gejalas.push('mual');
@@ -1157,17 +1322,31 @@
                 // PENENTUAN STATUS GIZI DEWASA VS ANAK
                 let statusGiziDisplay = "";
                 let statusGiziKategori = "";
+                let pediaResult = null;
                 
                 const isChildUnder5 = (totalMonths <= 60 && totalMonths > 0);
-                const isPediatricUnder18 = (ruangRawat === "Rawat Inap Anak" && calculatedAgeYears < 18);
-
+                const isPediatricUnder18 = (ruangRawat === "Rawat Inap Anak" || calculatedAgeYears < 18);
+                
+                const pediaContainer = document.getElementById('pediatric-status-container');
+                
                 if ((isChildUnder5 || isPediatricUnder18) && bmi > 0) {
-                    let evalAge = calculatedAgeYears;
-                    if (evalAge < 2) evalAge = 2;
-                    const childResult = getChildNutritionalStatus(evalAge, gender, bmi);
-                    statusGiziKategori = childResult.status;
-                    statusGiziDisplay = `${childResult.status} (Anak - Permenkes No. 2/2020, Z-Score Est: ${childResult.z.toFixed(2)} SD)`;
+                    // 📍 HITUNG DENGAN 3 PARAMETER PERMENKES 2/2020
+                    pediaResult = calculatePediatricPermenkes2020(gender, totalMonths, calculatedAgeYears, weight, height, bmi);
+                    
+                    statusGiziKategori = pediaResult.statusUtama;
+                    statusGiziDisplay = `${pediaResult.statusUtama} (Anak Permenkes No. 2/2020)`;
+                
+                    // Tampilkan Container 3 Parameter Anak di UI
+                    if (pediaContainer) {
+                        pediaContainer.classList.remove('hidden');
+                        document.getElementById('out-pedia-bbu').textContent = `${pediaResult.bbu.status} (Z-Score: ${pediaResult.bbu.z.toFixed(2)} SD)`;
+                        document.getElementById('out-pedia-bbtb').textContent = `${pediaResult.bbtb.status} (Z-Score: ${pediaResult.bbtb.z.toFixed(2)} SD)`;
+                        document.getElementById('out-pedia-imtu').textContent = `${pediaResult.imtu.status} (Z-Score: ${pediaResult.imtu.z.toFixed(2)} SD)`;
+                    }
                 } else {
+                    // Sembunyikan Detail Anak jika Pasien Dewasa
+                    if (pediaContainer) pediaContainer.classList.add('hidden');
+                
                     if (bmi < 18.5) statusGiziKategori = 'Sangat Kurus (Underweight)';
                     else if (bmi >= 18.5 && bmi < 25.0) statusGiziKategori = 'Normal';
                     else if (bmi >= 25.0 && bmi < 27.0) statusGiziKategori = 'Kelebihan Berat Badan (Overweight)';
@@ -1175,7 +1354,6 @@
                     
                     statusGiziDisplay = `${statusGiziKategori} (Dewasa / Standar Umum)`;
                 }
-
                 // =========================================================================
                 // 📍 [PEMBARUAN 1] LOGIKA HITUNG BBI & PENENTUAN BASIS BB UNTUK BMR
                 // =========================================================================
@@ -1318,6 +1496,11 @@
                     tinggi: height,
                     bbi: bbi.toFixed(1),
                     imt: `${bmi.toFixed(1)} (${statusGiziKategori})`,
+                    statusGizi: statusGiziDisplay,
+                    bbuStatus: pediaResult ? pediaResult.bbu.status : "N/A (Dewasa)",
+                    tbuStatus: pediaResult ? pediaResult.tbu.status : "N/A (Dewasa)",
+                    bbtbStatus: pediaResult ? pediaResult.bbtb.status : "N/A (Dewasa)",
+                    imtuStatus: pediaResult ? pediaResult.imtu.status : "N/A (Dewasa)",
                     bmr: Math.round(bmr),
                     tee: Math.round(tee),
                     protein: `${protG.toFixed(1)}g (${Math.round(protKcal)} kcal)`,
@@ -1417,6 +1600,14 @@
         }
 
         function downloadSummaryFile(data) {
+    const pediaText = (data.bbtbStatus && data.bbtbStatus !== "N/A (Dewasa)") 
+        ? `\nPARAMETER GIZI ANAK (PERMENKES 2/2020) :
+- BB/U  : ${data.bbuStatus}
+- TB/U  : ${data.tbuStatus}
+- BB/TB : ${data.bbtbStatus}
+- IMT/U : ${data.imtuStatus}`
+        : '';
+
     const content = `LAPORAN ASUHAN GIZI PASIEN
 ==================================================
 TANGGAL PEMERIKSAAN : ${data.tanggalMasuk}
@@ -1432,6 +1623,7 @@ DIAGNOSA MEDIS      : ${data.diagnosaMedis}
 --------------------------------------------------
 ANTROPOMETRI        : TB ${data.tinggi} cm / BB ${data.berat} kg (BBI: ${data.bbi} kg)
 HASIL IMT / INDEKS  : ${data.imt}
+STATUS GIZI         : ${data.statusGizi || data.imt}${pediaText}
 ESTIMASI BMR        : ${data.bmr} kcal
 ESTIMASI TEE        : ${data.tee} kcal
 KEBUTUHAN ZAT GIZI  : Protein ${data.protein}, Lemak ${data.lemak}, Karbohidrat ${data.karbohidrat}
