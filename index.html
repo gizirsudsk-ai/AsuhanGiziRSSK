@@ -670,7 +670,7 @@
         // =========================================================================
         // PENGATURAN TAUTAN GOOGLE SPREADSHEETS (BAKU)
         // =========================================================================
-        const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwmfrfKjhYMgTlfGVJFl0aPIEtab3xca5lN1vfPCf2PC86QZNO28-i9MBun5BpATtPJCA/exec";
+        const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxI3Y-xuYoU2ELmSGXSbb5LeTK6hZ4L24l0Yq1ItWYHxGQrZK98JHWcl9HEKdPjora7Xw/exec";
         // =========================================================================
 
      // 📍 POTONGAN TABEL REFERENSI & KALKULATOR PERMENKES 2020
@@ -1620,13 +1620,13 @@ function processOcrImage(input) {
     const label = document.getElementById('upload-label');
     const loader = document.getElementById('ocr-loader');
     
-    label.textContent = `Mengompresi & Membaca ${files.length} Berkas...`;
+    label.textContent = `Mengompresi ${files.length} Berkas...`;
     loader.classList.remove('hidden');
 
-    // Kompresi resolusi gambar ke max 1280px & kualitas 70% di browser pasien/petugas
+    // Kompresi Asinkron Ultra Cepat (Max 1024px, ~80KB per foto)
     const promises = [];
     for (let i = 0; i < files.length; i++) {
-        promises.push(compressAndConvertToBase64(files[i], 1280, 1280, 0.7)); 
+        promises.push(compressAndConvertToBase64(files[i], 1024, 1024, 0.78)); 
     }
 
     Promise.all(promises)
@@ -1641,9 +1641,8 @@ function processOcrImage(input) {
         });
 }
 
-// Fungsi Kompresi Foto Menggunakan Canvas Browser (Menghemat Token & Mencegah Rate Limit)
-// Konversi Gambar Bersih & Tajam (High-Resolution Clean Downscaling)
-function compressAndConvertToBase64(file, maxWidth = 2000, maxHeight = 2000, quality = 0.92) {
+// Fungsi Kompresi Cerdas: Mempertahankan Ketajaman Tulisan Tangan / Pensil
+function compressAndConvertToBase64(file, maxWidth = 1024, maxHeight = 1024, quality = 0.78) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -1654,7 +1653,7 @@ function compressAndConvertToBase64(file, maxWidth = 2000, maxHeight = 2000, qua
                 let width = img.width;
                 let height = img.height;
 
-                // Proporsi dimensi yang tetap presisi
+                // Hitung skala rasio presisi
                 if (width > height) {
                     if (width > maxWidth) {
                         height = Math.round((height * maxWidth) / width);
@@ -1672,22 +1671,19 @@ function compressAndConvertToBase64(file, maxWidth = 2000, maxHeight = 2000, qua
                 canvas.height = height;
 
                 const ctx = canvas.getContext('2d');
-
-                // Memastikan rendering halus tanpa filter CSS yang merusak garis tulisan tangan
+                // Filter Smoothing Halus Agar Garis Tulisan Tangan Tidak Pecah
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'high';
                 ctx.drawImage(img, 0, 0, width, height);
 
-                // Menghasilkan JPEG tajam tanpa kehilangan detail tulisan desimal/pensil
-                const compressedBase64 = canvas.toDataURL('image/jpeg', quality);
-                resolve(compressedBase64);
+                // Output JPEG Ringan & Tajam
+                resolve(canvas.toDataURL('image/jpeg', quality));
             };
             img.onerror = err => reject(err);
         };
         reader.onerror = err => reject(err);
     });
 }
-
         function fileToBase64(file) {
             return new Promise((resolve, reject) => {
                 const reader = new FileReader();
