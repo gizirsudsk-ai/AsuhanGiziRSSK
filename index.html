@@ -838,23 +838,32 @@ function getChildNutritionalStatus(ageY, gender, bmi) {
 
         // Logika Penguncian Rumus Sesuai Ketetapan Baru (Harris-Benedict untuk Penyakit Dalam, HCU, Kebidanan) [2]
         function applyRoomFormulaRules(room) {
-            const formulaSelect = document.getElementById('formula');
+        const formulaSelect = document.getElementById('formula');
+        
+        // Cek apakah pasien adalah Anak/Balita (< 18 tahun atau totalMonths <= 216)
+        const isChild = (calculatedAgeYears < 18 || (totalMonths > 0 && totalMonths <= 216));
+    
+        // Jika Pasien Anak berada di Ruang Anak ATAU Ruang HCU
+        if (isChild && (room === "Rawat Inap Anak" || room === "HCU")) {
+            formulaSelect.disabled = false; // BUKA KUNCI RUMUS
             
-            if (room === "Rawat Inap Penyakit Dalam" || room === "HCU" || room === "Rawat Inap Kebidanan") {
-                formulaSelect.value = "harris"; // LOCKED to Harris-Benedict [2]
-                formulaSelect.disabled = true;
+            if (totalMonths > 0 && totalMonths <= 60) {
+                formulaSelect.value = "schofield"; // Otomatis Schofield untuk Balita (0 - 5 Tahun / 0 - 60 Bulan)
             } else {
-                formulaSelect.disabled = false;
-                if (room === "Rawat Inap Anak") {
-                    if (totalMonths <= 60 && totalMonths > 0) {
-                        formulaSelect.value = "schofield";
-                    } else {
-                        formulaSelect.value = "mifflin"; // Di atas 5 tahun menggunakan "rumus biasa"
-                    }
-                }
+                formulaSelect.value = "mifflin"; // Bebas dipilih (Mifflin/Harris) untuk Anak > 5 Tahun
             }
-            autoGeneratePESDraft();
+        } 
+        // Jika Pasien Dewasa (>= 18 tahun) di Penyakit Dalam, HCU, atau Kebidanan
+        else if (room === "Rawat Inap Penyakit Dalam" || room === "HCU" || room === "Rawat Inap Kebidanan") {
+            formulaSelect.value = "harris"; // LOCKED to Harris-Benedict hanya untuk DEWASA
+            formulaSelect.disabled = true;
+        } 
+        else {
+            formulaSelect.disabled = false;
         }
+    
+        autoGeneratePESDraft();
+    }
 
         function calculateAge() {
             const dobInput = document.getElementById('dob').value;
@@ -985,26 +994,22 @@ function getChildNutritionalStatus(ageY, gender, bmi) {
             let pediaResult = null; // 📍 DEKLARASI DIPERBAIKI (Mencegah pediaResult is not defined)
 
             const isChildUnder5 = (totalMonths <= 60 && totalMonths > 0);
-            const isPediatricUnder18 = (ruangRawat === "Rawat Inap Anak" && calculatedAgeYears < 18);
-
-            if (bmi > 0) {
-                if (isChildUnder5 || isPediatricUnder18) {
-                    let evalAge = calculatedAgeYears;
-                    if (evalAge < 2) evalAge = 2; // Batas minimal tabel interpolasi
-                    
-                    // Hitung parameter Permenkes 2020 untuk anak
-                    if (typeof calculatePediatricPermenkes2020 === 'function') {
-                        pediaResult = calculatePediatricPermenkes2020(gender, totalMonths, calculatedAgeYears, weight, height, bmi);
-                    }
-                    
-                    const childResult = getChildNutritionalStatus(evalAge, gender, bmi);
-                    statusGiziKategori = childResult.status;
-                } else {
-                    if (bmi < 18.5) statusGiziKategori = 'Sangat Kurus (Underweight)';
-                    else if (bmi >= 18.5 && bmi < 25.0) statusGiziKategori = 'Normal';
-                    else if (bmi >= 25.0 && bmi < 27.0) statusGiziKategori = 'Kelebihan Berat Badan (Overweight)';
-                    else statusGiziKategori = 'Obesitas (Obese)';
-                }
+            const isPediatricUnder18 = (calculatedAgeYears < 18 || totalMonths <= 216) && (ruangRawat === "Rawat Inap Anak" || ruangRawat === "HCU");
+            
+            if ((isChildUnder5 || isPediatricUnder18) && bmi > 0) {
+                let evalAge = calculatedAgeYears;
+                if (evalAge < 2) evalAge = 2; // Batas minimal tabel interpolasi
+                const childResult = getChildNutritionalStatus(evalAge, gender, bmi);
+                statusGiziKategori = childResult.status;
+                statusGiziDisplay = `${childResult.status} (Anak/Balita - Permenkes No. 2/2020)`;
+            } else {
+                // Klasifikasi IMT Dewasa
+                if (bmi < 18.5) statusGiziKategori = 'Sangat Kurus (Underweight)';
+                else if (bmi >= 18.5 && bmi < 25.0) statusGiziKategori = 'Normal';
+                else if (bmi >= 25.0 && bmi < 27.0) statusGiziKategori = 'Kelebihan Berat Badan (Overweight)';
+                else statusGiziKategori = 'Obesitas (Obese)';
+                
+                statusGiziDisplay = `${statusGiziKategori} (Dewasa / Standar Umum)`;
             }
 
             let pesList = [];
