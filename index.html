@@ -1612,12 +1612,10 @@ ${data.monev}
     link.click();
     document.body.removeChild(link);
 }
-        // =========================================================================
-        // KODE JAVASCRIPT INTEGRASI OCR / SCAN MULTI-HALAMAN
-        // =========================================================================
-        // =========================================================================
-// KODE JAVASCRIPT INTEGRASI OCR / SCAN MULTI-HALAMAN (DENGAN KOMPRESI)
 // =========================================================================
+// KODE HTML JS DISELARASKAN DENGAN APPS SCRIPT (BEBAS FAILED TO FETCH)
+// =========================================================================
+
 function processOcrImage(input) {
     const files = input.files;
     if (!files || files.length === 0) return;
@@ -1628,10 +1626,10 @@ function processOcrImage(input) {
     label.textContent = `Mengompresi ${files.length} Berkas...`;
     loader.classList.remove('hidden');
 
-    // Kompresi Asinkron Ultra Cepat (Max 1024px, ~80KB per foto)
+    // Kompresi Super Ringan (Max 850px, Quality 0.65 -> ~40-60KB per foto)
     const promises = [];
     for (let i = 0; i < files.length; i++) {
-        promises.push(compressAndConvertToBase64(files[i], 1024, 1024, 0.78)); 
+        promises.push(compressAndConvertToBase64(files[i], 850, 850, 0.65)); 
     }
 
     Promise.all(promises)
@@ -1646,8 +1644,7 @@ function processOcrImage(input) {
         });
 }
 
-// Fungsi Kompresi Cerdas: Mempertahankan Ketajaman Tulisan Tangan / Pensil
-function compressAndConvertToBase64(file, maxWidth = 1024, maxHeight = 1024, quality = 0.78) {
+function compressAndConvertToBase64(file, maxWidth = 850, maxHeight = 850, quality = 0.65) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.readAsDataURL(file);
@@ -1658,7 +1655,6 @@ function compressAndConvertToBase64(file, maxWidth = 1024, maxHeight = 1024, qua
                 let width = img.width;
                 let height = img.height;
 
-                // Hitung skala rasio presisi
                 if (width > height) {
                     if (width > maxWidth) {
                         height = Math.round((height * maxWidth) / width);
@@ -1676,12 +1672,10 @@ function compressAndConvertToBase64(file, maxWidth = 1024, maxHeight = 1024, qua
                 canvas.height = height;
 
                 const ctx = canvas.getContext('2d');
-                // Filter Smoothing Halus Agar Garis Tulisan Tangan Tidak Pecah
                 ctx.imageSmoothingEnabled = true;
                 ctx.imageSmoothingQuality = 'high';
                 ctx.drawImage(img, 0, 0, width, height);
 
-                // Output JPEG Ringan & Tajam
                 resolve(canvas.toDataURL('image/jpeg', quality));
             };
             img.onerror = err => reject(err);
@@ -1689,22 +1683,14 @@ function compressAndConvertToBase64(file, maxWidth = 1024, maxHeight = 1024, qua
         reader.onerror = err => reject(err);
     });
 }
-        function fileToBase64(file) {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = error => reject(error);
-                reader.readAsDataURL(file);
-            });
-        }
 
-    function sendImagesToAppsScript(base64Array) {
+function sendImagesToAppsScript(base64Array) {
     const apiUrL = GOOGLE_SHEETS_WEB_APP_URL;
     const label = document.getElementById('upload-label');
     const loader = document.getElementById('ocr-loader');
 
     if (!apiUrL || apiUrL.includes("TEMPEL_URL") || apiUrL.trim() === "") {
-        alert('Tautan Google Apps Script belum terpasang dengan benar di bagian atas kode HTML Anda.');
+        alert('Tautan Google Apps Script belum terpasang dengan benar di file HTML Anda.');
         label.textContent = "📂 Pilih / Ambil Foto Catatan";
         loader.classList.add('hidden');
         return;
@@ -1722,12 +1708,10 @@ function compressAndConvertToBase64(file, maxWidth = 1024, maxHeight = 1024, qua
     })
     .then(async response => {
         const textResponse = await response.text();
-        
-        // 📍 PEMERIKSAAN AMAN: Cek apakah respon benar-benar JSON atau Halaman HTML
         try {
             return JSON.parse(textResponse);
-        } catch (jsonErr) {
-            throw new Error("Server Google mengembalikan halaman HTML. Pastikan pengaturan Deploy 'Who has access' sudah di-set ke 'Anyone (Siapa Saja)'.");
+        } catch (e) {
+            throw new Error("Respon Server lain (HTML/Akses). Pastikan 'Who has access' = 'Anyone'. Detail: " + textResponse.substring(0, 100));
         }
     })
     .then(result => {
@@ -1743,7 +1727,7 @@ function compressAndConvertToBase64(file, maxWidth = 1024, maxHeight = 1024, qua
     })
     .catch(error => {
         console.error('OCR Error:', error);
-        alert('Gagal menyambung ke server OCR: ' + error.message);
+        alert('Gagal menyambung ke server OCR (' + error.message + ').\n\nSOLUSI PASTI:\n1. Pastikan GOOGLE_SHEETS_WEB_APP_URL di HTML memakai URL /exec TERBARU dari Deploy Apps Script.\n2. Pastikan izin Deploy "Who has access" di-set ke "Anyone".');
         label.textContent = "📂 Pilih / Ambil Foto Catatan";
         loader.classList.add('hidden');
     });
