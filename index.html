@@ -1698,47 +1698,56 @@ function compressAndConvertToBase64(file, maxWidth = 1024, maxHeight = 1024, qua
             });
         }
 
-        function sendImagesToAppsScript(base64Array) {
-            const apiUrL = GOOGLE_SHEETS_WEB_APP_URL;
-            const label = document.getElementById('upload-label');
-            const loader = document.getElementById('ocr-loader');
+    function sendImagesToAppsScript(base64Array) {
+    const apiUrL = GOOGLE_SHEETS_WEB_APP_URL;
+    const label = document.getElementById('upload-label');
+    const loader = document.getElementById('ocr-loader');
 
-            if (!apiUrL || apiUrL.includes("TEMPEL_URL") || apiUrL.trim() === "") {
-                alert('Tautan Google Apps Script belum terpasang dengan benar di bagian atas kode HTML Anda.');
-                label.textContent = "📂 Pilih / Ambil Foto Catatan";
-                loader.classList.add('hidden');
-                return;
-            }
+    if (!apiUrL || apiUrL.includes("TEMPEL_URL") || apiUrL.trim() === "") {
+        alert('Tautan Google Apps Script belum terpasang dengan benar di bagian atas kode HTML Anda.');
+        label.textContent = "📂 Pilih / Ambil Foto Catatan";
+        loader.classList.add('hidden');
+        return;
+    }
 
-            fetch(apiUrL, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'text/plain'
-                },
-                body: JSON.stringify({
-                    action: "parseImage",
-                    imagesBase64: base64Array
-                })
-            })
-            .then(response => response.json())
-            .then(result => {
-                label.textContent = "📂 Pilih / Ambil Foto Catatan";
-                loader.classList.add('hidden');
-
-                if (result.status === "success" && result.data) {
-                    populateFormWithOcrData(result.data);
-                    alert("Ekstraksi data dari kedua halaman asuhan gizi berhasil digabungkan.");
-                } else {
-                    alert("Analisis gagal: " + (result.message || "Teks medis tidak dapat terbaca"));
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Gagal menyambung ke server OCR: ' + error.message);
-                label.textContent = "📂 Pilih / Ambil Foto Catatan";
-                loader.classList.add('hidden');
-            });
+    fetch(apiUrL, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+        },
+        body: JSON.stringify({
+            action: "parseImage",
+            imagesBase64: base64Array
+        })
+    })
+    .then(async response => {
+        const textResponse = await response.text();
+        
+        // 📍 PEMERIKSAAN AMAN: Cek apakah respon benar-benar JSON atau Halaman HTML
+        try {
+            return JSON.parse(textResponse);
+        } catch (jsonErr) {
+            throw new Error("Server Google mengembalikan halaman HTML. Pastikan pengaturan Deploy 'Who has access' sudah di-set ke 'Anyone (Siapa Saja)'.");
         }
+    })
+    .then(result => {
+        label.textContent = "📂 Pilih / Ambil Foto Catatan";
+        loader.classList.add('hidden');
+
+        if (result.status === "success" && result.data) {
+            populateFormWithOcrData(result.data);
+            alert("Ekstraksi data asuhan gizi berhasil!");
+        } else {
+            alert("Analisis AI Gagal: " + (result.message || "Teks tidak dapat terbaca"));
+        }
+    })
+    .catch(error => {
+        console.error('OCR Error:', error);
+        alert('Gagal menyambung ke server OCR: ' + error.message);
+        label.textContent = "📂 Pilih / Ambil Foto Catatan";
+        loader.classList.add('hidden');
+    });
+}
 
         // Helper Fungsi untuk Mengubah Berbagai Format Tanggal ke YYYY-MM-DD (Standar HTML5)
 function formatToISODate(dateStr) {
