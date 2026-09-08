@@ -670,7 +670,7 @@
         // =========================================================================
         // PENGATURAN TAUTAN GOOGLE SPREADSHEETS (BAKU)
         // =========================================================================
-        const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwhKqHw_Hq8u4a7LtPu2ltUdqOG9oNosZpNLY5gLyRGq7F6wgRaZ5SmboanDhVrYeXp/exec";
+        const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyW6hDnyr-wmWlNDEcQOaD3zGQmEDD2yzdnQMtASD3aFuzHEM5017k6Xnmu-yujDrJGrg/exec";
         // =========================================================================
 
      // 📍 POTONGAN TABEL REFERENSI & KALKULATOR PERMENKES 2020
@@ -1678,24 +1678,28 @@ function sendImagesToAppsScript(base64Array) {
         return;
     }
 
-    // Menggunakan text/plain agar bebas dari blokir Preflight CORS
+    const payloadString = JSON.stringify({
+        action: "parseImage",
+        imagesBase64: base64Array
+    });
+
+    // Mengirim payload tanpa header khusus agar Google Front End TIDAK melakukan redirect ke login Google
     fetch(apiUrL, {
         method: 'POST',
-        headers: {
-            'Content-Type': 'text/plain;charset=utf-8'
-        },
-        body: JSON.stringify({
-            action: "parseImage",
-            imagesBase64: base64Array
-        })
+        body: payloadString
     })
     .then(async response => {
-        // Tangkap sebagai teks terlebih dahulu untuk menghindari JSON parse crash
-        const rawText = await response.text();
+        const textResponse = await response.text();
+        
+        // Deteksi jika respon berupa HTML (halaman peringatan/redirect Google)
+        if (textResponse.trim().startsWith("<") || textResponse.includes("<!DOCTYPE")) {
+            throw new Error("Server mengembalikan halaman HTML. Kemungkinan ukuran foto terlalu besar saat dikirim bersamaan. Coba pilih 1 foto terlebih dahulu.");
+        }
+        
         try {
-            return JSON.parse(rawText);
-        } catch (parseErr) {
-            throw new Error("Respon server bukan JSON yang valid: " + rawText.substring(0, 120));
+            return JSON.parse(textResponse);
+        } catch (e) {
+            throw new Error("Format respon tidak dapat dibaca: " + textResponse.substring(0, 100));
         }
     })
     .then(result => {
@@ -1706,42 +1710,16 @@ function sendImagesToAppsScript(base64Array) {
             populateFormWithOcrData(result.data);
             alert("Ekstraksi data asuhan gizi berhasil!");
         } else {
-            alert("Analisis AI Gagal: " + (result.message || "Teks formulir tidak dapat terbaca secara jelas."));
+            alert("Analisis AI Gagal: " + (result.message || "Teks tidak dapat terbaca"));
         }
     })
     .catch(error => {
         console.error('OCR Error:', error);
-        alert('Gagal menyambung ke server OCR:\n' + error.message + '\n\nPastikan Deployment Apps Script sudah di-deploy dengan opsi "Who has access: Anyone".');
+        alert('Gagal menyambung ke server OCR:\n' + error.message);
         label.textContent = "📂 Pilih / Ambil Foto Catatan";
         loader.classList.add('hidden');
     });
 }
-        // Helper Fungsi untuk Mengubah Berbagai Format Tanggal ke YYYY-MM-DD (Standar HTML5)
-function formatToISODate(dateStr) {
-    if (!dateStr || dateStr === '-' || dateStr === 'null') return '';
-    
-    // 1. Jika sudah YYYY-MM-DD
-    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
-    
-    // 2. Jika format DD-MM-YYYY, DD/MM/YYYY, atau YYYY/MM/DD
-    let parts = dateStr.split(/[-/.]/);
-    if (parts.length === 3) {
-        if (parts[0].length === 4) { // YYYY/MM/DD
-            return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
-        } else if (parts[2].length === 4) { // DD/MM/YYYY
-            return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
-        }
-    }
-    
-    // 3. Percobaan konversi via Javascript Date Object
-    const parsedDate = new Date(dateStr);
-    if (!isNaN(parsedDate.getTime())) {
-        return parsedDate.toISOString().split('T')[0];
-    }
-    
-    return '';
-}
-
 function populateFormWithOcrData(data) {
     if (!data) return;
     
