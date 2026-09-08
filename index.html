@@ -670,7 +670,7 @@
         // =========================================================================
         // PENGATURAN TAUTAN GOOGLE SPREADSHEETS (BAKU)
         // =========================================================================
-        const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzrA0IzPLGZBvMA8rDeU6Cuhet7H7xw_xdIEAyLUEAR_4-92B9mX7wFiEFQJ5doGYDOPg/exec";
+        const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbztn5YooTIaUyKGivX4R1S8CJV45Qbj9wQa8JsCVM7HXJolv7t2yQq0tTcEANFjNUIg6Q/exec";
         // =========================================================================
 
      // 📍 POTONGAN TABEL REFERENSI & KALKULATOR PERMENKES 2020
@@ -1696,6 +1696,8 @@ function sendImagesToAppsScript(base64Array) {
         return;
     }
 
+    // Menggunakan text/plain agar browser TIDAK mengirim Preflight OPTIONS
+    // yang sering membuat Apps Script mengalami "Failed to fetch" di Android/iOS
     fetch(apiUrL, {
         method: 'POST',
         headers: {
@@ -1706,13 +1708,11 @@ function sendImagesToAppsScript(base64Array) {
             imagesBase64: base64Array
         })
     })
-    .then(async response => {
-        const textResponse = await response.text();
-        try {
-            return JSON.parse(textResponse);
-        } catch (e) {
-            throw new Error("Respon Server lain (HTML/Akses). Pastikan 'Who has access' = 'Anyone'. Detail: " + textResponse.substring(0, 100));
+    .then(response => {
+        if (!response.ok) {
+            throw new Error("HTTP error " + response.status);
         }
+        return response.json();
     })
     .then(result => {
         label.textContent = "📂 Pilih / Ambil Foto Catatan";
@@ -1727,12 +1727,12 @@ function sendImagesToAppsScript(base64Array) {
     })
     .catch(error => {
         console.error('OCR Error:', error);
-        alert('Gagal menyambung ke server OCR (' + error.message + ').\n\nSOLUSI PASTI:\n1. Pastikan GOOGLE_SHEETS_WEB_APP_URL di HTML memakai URL /exec TERBARU dari Deploy Apps Script.\n2. Pastikan izin Deploy "Who has access" di-set ke "Anyone".');
+        alert('Gagal menyambung ke server OCR: ' + error.message + 
+              '\n\nCatatan: Pastikan Apps Script sudah di-Deploy ulang sebagai "New version" dengan akses "Anyone".');
         label.textContent = "📂 Pilih / Ambil Foto Catatan";
         loader.classList.add('hidden');
     });
 }
-
         // Helper Fungsi untuk Mengubah Berbagai Format Tanggal ke YYYY-MM-DD (Standar HTML5)
 function formatToISODate(dateStr) {
     if (!dateStr || dateStr === '-' || dateStr === 'null') return '';
