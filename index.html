@@ -670,7 +670,7 @@
         // =========================================================================
         // PENGATURAN TAUTAN GOOGLE SPREADSHEETS (BAKU)
         // =========================================================================
-        const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbztn5YooTIaUyKGivX4R1S8CJV45Qbj9wQa8JsCVM7HXJolv7t2yQq0tTcEANFjNUIg6Q/exec";
+        const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwhKqHw_Hq8u4a7LtPu2ltUdqOG9oNosZpNLY5gLyRGq7F6wgRaZ5SmboanDhVrYeXp/exec";
         // =========================================================================
 
      // 📍 POTONGAN TABEL REFERENSI & KALKULATOR PERMENKES 2020
@@ -1539,26 +1539,6 @@ function getChildNutritionalStatus(ageY, gender, bmi) {
                 console.error(err);
             }
         }
-    // =========================================================================
-// FUNGSI JEMBATAN (PENCEGAH ERROR getChildNutritionalStatus is not defined)
-// =========================================================================
-function getChildNutritionalStatus(ageY, gender, bmi) {
-    const months = (typeof totalMonths !== 'undefined' && totalMonths > 0) 
-        ? totalMonths 
-        : (ageY * 12);
-    
-    const weight = parseFloat(document.getElementById('weight')?.value) || 0;
-    const height = parseFloat(document.getElementById('height')?.value) || 0;
-
-    // Dialihkan secara otomatis ke kalkulator Permenkes No. 2 Tahun 2020
-    const res = calculatePediatricPermenkes2020(gender, months, ageY, weight, height, bmi);
-    
-    return {
-        status: res.statusUtama,
-        z: res.bbtb.z || res.imtu.z || 0
-    };
-}
-
         function downloadSummaryFile(data) {
     const pediaText = (data.bbtbStatus && data.bbtbStatus !== "N/A (Dewasa)") 
         ? `\nPARAMETER GIZI ANAK (PERMENKES 2/2020) :
@@ -1626,7 +1606,6 @@ function processOcrImage(input) {
     label.textContent = `Mengompresi ${files.length} Berkas...`;
     loader.classList.remove('hidden');
 
-    // Kompresi Super Ringan (Max 850px, Quality 0.65 -> ~40-60KB per foto)
     const promises = [];
     for (let i = 0; i < files.length; i++) {
         promises.push(compressAndConvertToBase64(files[i], 850, 850, 0.65)); 
@@ -1641,9 +1620,12 @@ function processOcrImage(input) {
             alert("Gagal memproses berkas gambar: " + err.message);
             label.textContent = "📂 Pilih / Ambil Foto Catatan";
             loader.classList.add('hidden');
+        })
+        .finally(() => {
+            // Reset input file agar pengguna bisa mengunggah ulang foto kapan saja
+            input.value = '';
         });
 }
-
 function compressAndConvertToBase64(file, maxWidth = 850, maxHeight = 850, quality = 0.65) {
     return new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -1696,8 +1678,7 @@ function sendImagesToAppsScript(base64Array) {
         return;
     }
 
-    // Menggunakan text/plain agar browser TIDAK mengirim Preflight OPTIONS
-    // yang sering membuat Apps Script mengalami "Failed to fetch" di Android/iOS
+    // Menggunakan text/plain agar bebas dari blokir Preflight CORS
     fetch(apiUrL, {
         method: 'POST',
         headers: {
@@ -1708,11 +1689,14 @@ function sendImagesToAppsScript(base64Array) {
             imagesBase64: base64Array
         })
     })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error("HTTP error " + response.status);
+    .then(async response => {
+        // Tangkap sebagai teks terlebih dahulu untuk menghindari JSON parse crash
+        const rawText = await response.text();
+        try {
+            return JSON.parse(rawText);
+        } catch (parseErr) {
+            throw new Error("Respon server bukan JSON yang valid: " + rawText.substring(0, 120));
         }
-        return response.json();
     })
     .then(result => {
         label.textContent = "📂 Pilih / Ambil Foto Catatan";
@@ -1722,13 +1706,12 @@ function sendImagesToAppsScript(base64Array) {
             populateFormWithOcrData(result.data);
             alert("Ekstraksi data asuhan gizi berhasil!");
         } else {
-            alert("Analisis AI Gagal: " + (result.message || "Teks tidak dapat terbaca"));
+            alert("Analisis AI Gagal: " + (result.message || "Teks formulir tidak dapat terbaca secara jelas."));
         }
     })
     .catch(error => {
         console.error('OCR Error:', error);
-        alert('Gagal menyambung ke server OCR: ' + error.message + 
-              '\n\nCatatan: Pastikan Apps Script sudah di-Deploy ulang sebagai "New version" dengan akses "Anyone".');
+        alert('Gagal menyambung ke server OCR:\n' + error.message + '\n\nPastikan Deployment Apps Script sudah di-deploy dengan opsi "Who has access: Anyone".');
         label.textContent = "📂 Pilih / Ambil Foto Catatan";
         loader.classList.add('hidden');
     });
@@ -1999,115 +1982,6 @@ function generateTujuanDiet() {
             document.getElementById('name').value = '';
             document.getElementById('no-rm').value = '';
             document.getElementById('asuhan-date').value = '';
-            document.getElementById('address').value = '';
-            document.getElementById('dob').value = '';
-            document.getElementById('height').value = '';
-            document.getElementById('weight').value = '';
-            
-            document.getElementById('bio-hb').value = '';
-            document.getElementById('bio-albumin').value = '';
-            document.getElementById('bio-gds').value = '';
-            document.getElementById('bio-leuko').value = '';
-            document.getElementById('bio-trombo').value = '';
-            document.getElementById('bio-eritrosit').value = '';
-            document.getElementById('bio-aurat').value = '';
-            document.getElementById('bio-koles').value = '';
-            document.getElementById('bio-kreatin').value = '';
-
-            document.getElementById('clin-bp').value = '';
-            document.getElementById('clin-temp').value = '';
-            document.getElementById('clin-hr').value = '';
-            document.getElementById('clin-rr').value = '';
-            document.getElementById('diet-history').value = '';
-            document.getElementById('med-diagnosis').value = 'Diabetes Mellitus Tipe 2';
-            document.getElementById('med-diagnosis-custom').value = '';
-            document.getElementById('custom-med-diag-container').classList.add('hidden');
-            
-            document.getElementById('nutrition-diagnosis').value = '';
-            document.getElementById('nutrition-intervention').value = '';
-            document.getElementById('nutrition-monev').value = '';
-
-            document.getElementById('gi-mual').checked = false;
-            document.getElementById('gi-muntah').checked = false;
-            document.getElementById('gi-diare').checked = false;
-            document.getElementById('gi-menelan').checked = false;
-
-            document.getElementById('scr-nafsu-makan').checked = false;
-            document.getElementById('scr-asupan').checked = false;
-            document.getElementById('scr-kunyah').checked = false;
-            document.getElementById('scr-bb-turun').checked = false;
-
-            document.querySelectorAll('.diet-item').forEach(item => {
-                item.checked = false;
-            });
-
-            document.querySelectorAll('.habit-item').forEach(item => {
-                item.checked = false;
-            });
-
-            document.querySelector('input[name="ruang-rawat"][value="Rawat Inap Kebidanan"]').checked = true;
-            document.querySelector('input[name="kelas-rawat"][value="Kelas 3"]').checked = true;
-            
-            const defaultPasien = document.querySelector('input[name="jenis-pasien"][value="Umum"]');
-            if (defaultPasien) defaultPasien.checked = true;
-
-            document.getElementById('pct-protein').value = 15;
-            document.getElementById('pct-fat').value = 25;
-            document.getElementById('pct-carb').value = 60;
-            validatePercentages();
-
-            document.getElementById('calculated-age').textContent = '-';
-            
-            document.getElementById('out-name').textContent = '-';
-            document.getElementById('out-no-rm').textContent = '-';
-            document.getElementById('out-rawat-info').textContent = '-';
-            document.getElementById('out-jenis-pasien').textContent = '-';
-            document.getElementById('out-address').textContent = '-';
-            document.getElementById('out-age').textContent = '-';
-            document.getElementById('out-anthropometry').textContent = '-';
-            document.getElementById('out-bmi').textContent = '-';
-            document.getElementById('out-status-gizi').textContent = '-';
-            document.getElementById('out-med-diag').textContent = '-';
-            document.getElementById('out-diet-preskripsi').textContent = '-';
-            document.getElementById('out-bmr').textContent = '0 kcal';
-            document.getElementById('out-tee').innerHTML = '0 <span class="text-sm font-normal text-slate-500">kcal/hari</span>';
-            document.getElementById('out-protein').textContent = '0 g';
-            document.getElementById('out-protein-kcal').textContent = '0 kcal';
-            document.getElementById('out-fat').textContent = '0 g';
-            document.getElementById('out-fat-kcal').textContent = '0 kcal';
-            document.getElementById('out-carb').textContent = '0 g';
-            document.getElementById('out-carb-kcal').textContent = '0 kcal';
-            
-            document.getElementById('out-bp').textContent = '-';
-            document.getElementById('out-temp').textContent = '-';
-            document.getElementById('out-hb').textContent = '-';
-            document.getElementById('out-albumin').textContent = '-';
-            document.getElementById('out-gds').textContent = '-';
-            document.getElementById('out-leuko').textContent = '-';
-            document.getElementById('out-trombo').textContent = '-';
-            document.getElementById('out-eritrosit').textContent = '-';
-            document.getElementById('out-aurat').textContent = '-';
-            document.getElementById('out-koles').textContent = '-';
-            document.getElementById('out-kreatin').textContent = '-';
-            document.getElementById('out-pes').textContent = 'Belum dihitung.';
-            document.getElementById('out-intervensi').textContent = '-';
-            document.getElementById('out-monev').textContent = '-';
-            
-            const btnSave = document.getElementById('btn-save-sheets');
-            btnSave.disabled = true;
-            btnSave.className = "flex-1 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl shadow-md transition-all opacity-50 cursor-not-allowed text-sm";
-            btnSave.textContent = 'Simpan & Unduh Laporan';
-            
-            const syncStatus = document.getElementById('sync-status');
-            syncStatus.textContent = 'Belum Disimpan';
-            syncStatus.className = 'text-[10px] bg-amber-100 text-amber-800 px-2.5 py-1 rounded-full font-bold uppercase no-print';
-
-            globalCalculatedData = null;
-        }
-        function resetForm() {
-            isPesEdited = false; // Reset status pelacak edit manual PES
-            document.getElementById('name').value = '';
-            document.getElementById('no-rm').value = '';
             document.getElementById('address').value = '';
             document.getElementById('dob').value = '';
             document.getElementById('height').value = '';
