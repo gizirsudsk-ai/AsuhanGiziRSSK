@@ -1720,6 +1720,33 @@ function sendImagesToAppsScript(base64Array) {
         loader.classList.add('hidden');
     });
 }
+// Letakkan tepat di atas function populateFormWithOcrData(data)
+function formatToISODate(dateStr) {
+    if (!dateStr || dateStr === '-' || dateStr === 'null') return '';
+    
+    // 1. Jika sudah berformat YYYY-MM-DD
+    if (/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return dateStr;
+    
+    // 2. Jika format DD-MM-YYYY atau DD/MM/YYYY
+    let parts = dateStr.split(/[-/.]/);
+    if (parts.length === 3) {
+        if (parts[0].length === 4) { // YYYY/MM/DD
+            return `${parts[0]}-${parts[1].padStart(2, '0')}-${parts[2].padStart(2, '0')}`;
+        } else if (parts[2].length === 4) { // DD/MM/YYYY
+            return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+        }
+    }
+    
+    // 3. Coba parsing lewat Date object
+    try {
+        const parsedDate = new Date(dateStr);
+        if (!isNaN(parsedDate.getTime())) {
+            return parsedDate.toISOString().split('T')[0];
+        }
+    } catch (e) {}
+    
+    return '';
+}
 function populateFormWithOcrData(data) {
     if (!data) return;
     
