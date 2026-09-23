@@ -670,7 +670,7 @@
         // =========================================================================
         // PENGATURAN TAUTAN GOOGLE SPREADSHEETS (BAKU)
         // =========================================================================
-        const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzFTIOjbYyTj7h_OjWHNyccC_J6fpRwQwCjgXUlK8I4RbrUODL9OpoGQid53ZMgBAVJhg/exec";
+        const GOOGLE_SHEETS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxHCVSy5Y9feM-p57BIlaKI26D4VvEZ7CPCHQCI04TdE-DkcV_q2uJ7qDaVXyFCajeuKw/exec";
         // =========================================================================
 
      // 📍 POTONGAN TABEL REFERENSI & KALKULATOR PERMENKES 2020
@@ -1293,8 +1293,20 @@ function getChildNutritionalStatus(ageY, gender, bmi) {
                     }
                 } else {
                     if (pediaContainer) pediaContainer.classList.add('hidden');
-                    // ... (perhitungan dewasa tetap) ...
+                    // Klasifikasi Status Gizi Dewasa (Standar Kemenkes / WHO Asia-Pasifik)
+                    if (bmi > 0) {
+                        if (bmi < 17.0) statusGiziKategori = 'Sangat Kurus (Kekurangan BB Berat)';
+                        else if (bmi >= 17.0 && bmi < 18.5) statusGiziKategori = 'Kurus (Kekurangan BB Ringan)';
+                        else if (bmi >= 18.5 && bmi <= 25.0) statusGiziKategori = 'Status Gizi Normal';
+                        else if (bmi > 25.0 && bmi <= 27.0) statusGiziKategori = 'Kelebihan Berat Badan (Overweight)';
+                        else statusGiziKategori = 'Obesitas (Obese)';
+                        
+                        statusGiziDisplay = `${statusGiziKategori} (IMT: ${bmi.toFixed(1)} kg/m²)`;
+                    } else {
+                        statusGiziDisplay = "-";
+                    }
                 }
+
                 // =========================================================================
                 // 📍 [PEMBARUAN 1] LOGIKA HITUNG BBI & PENENTUAN BASIS BB UNTUK BMR
                 // =========================================================================
@@ -1901,9 +1913,17 @@ function populateFormWithOcrData(data) {
         isPesEdited = true;
     }
 
-    const intervVal = getVal('nutritionIntervention', 'intervensiGizi', 'intervensi');
-    if (intervVal) document.getElementById('nutrition-intervention').value = intervVal;
-
+    // Memastikan Kebutuhan Gizi & Intervensi dari pindaian tersalin utuh ke textarea
+    let intervVal = getVal('nutritionIntervention', 'intervensiGizi', 'intervensi', 'kebutuhanGizi', 'terapiGizi');
+    const rawKebutuhan = getVal('kebutuhan_gizi', 'perhitunganGizi', 'kebutuhanEnergi');
+    
+    if (rawKebutuhan && (!intervVal || !intervVal.includes(String(rawKebutuhan)))) {
+        intervVal = intervVal ? `Kebutuhan Gizi:\n${rawKebutuhan}\n\nIntervensi:\n${intervVal}` : String(rawKebutuhan);
+    }
+    
+    if (intervVal) {
+        document.getElementById('nutrition-intervention').value = intervVal;
+    }
     const monevVal = getVal('nutritionMonev', 'monitoringEvaluasi', 'monev');
     if (monevVal) document.getElementById('nutrition-monev').value = monevVal;
 
